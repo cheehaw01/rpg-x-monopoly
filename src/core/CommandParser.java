@@ -20,12 +20,15 @@ public class CommandParser {
 
 	public int readInt(int[] choices) {
 		while (true) {
-			int v = getIntInput();
-
+			try{
+			int v = getIntInput();}
 			if (Util.intArrayContains(choices, v))
 				return v;
-
+			}
+			catch(Exception e){
 			System.out.println("Invalid choice. Chose again.");
+				v=scn.next();
+			}
 		}
 	}
 
