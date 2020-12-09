@@ -4,6 +4,8 @@ import util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.HashMap;
 
 public class Game {
 	TileType[] boardTiles;
@@ -85,6 +87,7 @@ public class Game {
 			TileType.SIN_M,
 			TileType.SIN_M
 		};
+		
 	}
 
 	private void initPlayers(){
@@ -130,23 +133,57 @@ public class Game {
 	}
 
 	private void giveRandomItem(Player player) {
+		Random r = new Random();
+		int itemId = r.nextInt(30);
+		int option = 1;
+		player.bag(option, itemId);
+
 		System.out.printf("%n[Player %d] gets random item from chest%n", player.getId());
+
 		// TODO : Give random item (Player store list of items?)
+		// Ans : Player store id of items.
 	}
 
 	private void setupShop(Player player) {
 		System.out.printf("%n[Player %d] is in a shop%n", player.getId());
 		System.out.println("Chose option");
 		System.out.println("1. Exit shop");
+		System.out.println("2. Buy item");
+		System.out.println("3. Sell item");
 
-		int choice = commandParser.readInt(new int[] {1});
+		int choice = commandParser.readInt(new int[] {1, 2, 3});
 
 		// TODO : Buying items (need place to store item data, maybe hash map)
+		HashMap<Integer, Integer> shopItems = new HashMap<Integer, Integer>();
+		// I not sure but there's Example below.
+		// Example: item id for "Sword" is 2 and potion is 28
+		shopItems.put(1, 2);
+		shopItems.put(2, 28);
+
+		int option = 0;
+		int itemSelect = 0;
 		switch (choice) {
 			case 1:
 				System.out.printf("%n[Player %d] left shop%n", player.getId());
 				break;
+			case 2:
+				System.out.println("Choose item to buy");
+				option = 1;
+				System.out.println("1. Sword");
+				System.out.println("2. Potion");
+				itemSelect = commandParser.readInt(new int[] {1, 2}); // << According to number of items sell in shop.
+				player.bag(option, shopItems.get(itemSelect));
+				break;
+			case 3:
+				System.out.println("Choose item to sell");
+				option = 3;
+				player.bag(option, 0);
+				itemSelect = commandParser.readInt(new int[] {1, 2, 3, 4}); // << depend on bag size.
+				option = 2;
+				player.bag(option, itemSelect);
+				break;
 		}
+		
 	}
 
 	private TileType getTileOn(int index) {

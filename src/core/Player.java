@@ -1,5 +1,6 @@
 package core;
 
+import java.util.ArrayList;
 // Container for stats and state
 public class Player {
 	// STATS
@@ -29,5 +30,22 @@ public class Player {
 
 	public int getId() {
 		return id;
+	}
+	public void bag(int Option, int itemID) {
+		// store player's items.
+		ArrayList itemObtained = new ArrayList();
+		// Option 1 - add, Option 2 - remove, Option 3 - display items obtained.
+		switch (Option){
+			case 1: 
+				itemObtained.add(itemID);
+				break;
+			case 2: 
+				itemObtained.remove(itemID);
+				break;
+			case 3:
+				System.out.println(itemObtained);
+				break;
+		}
+		
 	}
 }
