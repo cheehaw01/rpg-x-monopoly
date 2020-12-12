@@ -5,14 +5,15 @@ import util.Util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-//should we just import java.util.* ?
-
+import java.util.HashMap;
 import core.TileType;
 
 public class Game {
 	TileType[] boardTiles;
 	List<Player> players;
 	int currentPlayerIndex;
+	HashMap<Integer, String> itemList;
+	ArrayList<Integer> Inventory;
 
 	CommandParser commandParser;
 
@@ -84,7 +85,7 @@ public class Game {
             }
             while (count < monster_count[i]);
         }	
-	}
+  }
 
 	private void initPlayers(){
 		System.out.println("Enter player amount");
@@ -129,27 +130,101 @@ public class Game {
 	}
 
 	private void giveRandomItem(Player player) {
+		Random r = new Random();
+		int itemId = r.nextInt(30);
+		player.addItem(itemId, 1);
 		System.out.printf("%n[Player %d] gets random item from chest%n", player.getId());
+
 		// TODO : Give random item (Player store list of items?)
+		// DONE by HGC.
 	}
 
 	private void setupShop(Player player) {
 		System.out.printf("%n[Player %d] is in a shop%n", player.getId());
 		System.out.println("Chose option");
 		System.out.println("1. Exit shop");
+		System.out.println("2. Buy item");
+		System.out.println("3. Sell item");
 
-		int choice = commandParser.readInt(new int[] {1});
+		int choice = commandParser.readInt(new int[] {1, 2, 3});
 
 		// TODO : Buying items (need place to store item data, maybe hash map)
-		switch (choice) {
+		// DONE by HGC
+		
+		HashMap<Integer, Integer> shopItems = new HashMap<Integer, Integer>();
+		String[] itemsDisplay = new String[] {"Exit shop", "Sword", "Potion", "Armour"}; // <After we set which items to sell at shop.
+		// Example: itemID for Sword is 2, Potion is 28, Armout is 5
+		shopItems.put(1, 0);
+		shopItems.put(2, 2);
+		shopItems.put(3, 28);
+		shopItems.put(4, 5);
+
+		int itemSelect;
+		int leaveShop = 0;
+		
+		switch(choice) {
 			case 1:
 				System.out.printf("%n[Player %d] left shop%n", player.getId());
 				break;
+			case 2:
+				while(leaveShop == 0) {
+					System.out.println("Choose item to buy");
+					for(int i=0; i<itemsDisplay.length; i++){
+						System.out.printf("%d. %s\n", i+1, itemsDisplay[i]);
+					}
+					itemSelect = commandParser.readInt(new int[] {1, 2, 3, 4});
+					if(itemSelect != 1) {
+						System.out.println("Quantity: ");
+						int q = commandParser.readInt(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
+						player.addItem(shopItems.get(itemSelect), q);
+					}
+					else {
+						leaveShop = 1;
+					}
+				}
+				break;
+			case 3:
+				while(leaveShop == 0) {
+					int iSize = player.Inventory.size();
+					System.out.println("Choose item to sell");
+					int[] itemChoice = new int[iSize+1];
+					for(int i=0; i<iSize; i++) {
+						System.out.printf("%d. %s\n", i+1, gameItems(player.Inventory.get(i)));
+						itemChoice[i] = i+1;
+					}
+					itemChoice[iSize] = iSize+1;
+					System.out.printf("%d. Exit shop\n", itemChoice.length);
+					itemSelect = commandParser.readInt(itemChoice);
+					if(itemSelect != itemChoice.length) {
+						player.removeItem(itemSelect-1);
+					}
+					else {
+						leaveShop = 1;
+					}
+				}
+				break;
 		}
-	}
+	
+	}	
 
 	private TileType getTileOn(int index) {
 		index = Util.loopClampInRange(index, 0, boardTiles.length - 1);
 		return boardTiles[index];
 	}
+
+	private String gameItems(int itemID) {
+		itemList = new HashMap<Integer, String>();
+		{	
+			itemList.put(0, "Empty");
+			itemList.put(2, "Sword");
+			itemList.put(28, "Potion");
+			itemList.put(5, "Armour");
+			// more
+
+		}
+		return itemList.get(itemID);
+
+	}
 }
+
+
