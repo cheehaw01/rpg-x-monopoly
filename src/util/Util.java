@@ -11,15 +11,10 @@ public class Util {
 	}
 
 	public static int loopClampInRange(int v, int min, int max) {
-		if(v > max)
-		{
-			int q = v / max;
-			v = v - q * max;
-		}
-		else if (v < min){
-			int q = v / max;
-			v = max + (v - (max * q));
-		}
+		if (v < min)
+			v = max - (min - v) % (max - min);
+		else
+			v = min + (v - min) % (max - min);
 
 		return v;
 	}
