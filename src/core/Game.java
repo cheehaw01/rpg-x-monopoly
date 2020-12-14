@@ -179,10 +179,16 @@ public class Game {
 					System.out.printf("3. %s (%dG)%n", shopItems.get(1).Name, shopItems.get(1).Cost);
 					System.out.printf("4. %s (%dG)%n", shopItems.get(2).Name, shopItems.get(2).Cost);
 
-					int buyChoice = commandParser.readInt(new int[]{1});
+					int buyChoice = commandParser.readInt(new int[]{1, 2, 3, 4});
 
 					// TODO : Buying items (check if player has enough gold)
-
+					if (player.Gold >= shopItems.get(buyChoice-2).Cost) {
+						player.Gold -= shopItems.get(buyChoice-2).Cost;
+						player.addItem(shopItems.get(buyChoice-2), 1);
+						System.out.printf("[Player %d] bought %s for %dG. Your remaining gold is %dG.%n", player.getId(), shopItems.get(buyChoice-2).Name, shopItems.get(buyChoice-2).Cost, player.Gold);
+					} else {
+						System.out.printf("[Player %d] gold is not enough%n", player.getId());
+					}
 					// Return to shop menu
 					if(buyChoice == 1)
 						break;
