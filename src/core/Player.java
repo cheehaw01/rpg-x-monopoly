@@ -35,6 +35,10 @@ public class Player {
 		return id;
 	}
 
+	public ArrayList<Item> getItems() {
+		return inventory;
+	}
+
 	public void addItem(Item item, int quantity) {
 		for (int i = 0; i < quantity; i++) {
 			inventory.add(item);

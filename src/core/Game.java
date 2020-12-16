@@ -200,14 +200,13 @@ public class Game {
 					if (buyChoice == 1)
 						break;
 
-					// Item to buy
-					Item item = shopItems.get(buyChoice - 2);
+					Item itemToBuy = shopItems.get(buyChoice - 2);
 
-					if (player.Gold >= item.Cost) {
-						player.Gold -= item.Cost;
-						player.addItem(item, 1);
+					if (player.Gold >= itemToBuy.Cost) {
+						player.Gold -= itemToBuy.Cost;
+						player.addItem(itemToBuy, 1);
 						System.out.printf("%n[Player %d] bought %s for %dG. Remaining gold is %dG.%n",
-							player.getId(), item.Name, item.Cost, player.Gold);
+							player.getId(), itemToBuy.Name, itemToBuy.Cost, player.Gold);
 					}
 					else {
 						System.out.printf("[Player %d] gold is not enough%n", player.getId());
@@ -218,13 +217,35 @@ public class Game {
 					System.out.printf("%n[Player %d] Choose item to sell%n", player.getId());
 					System.out.println("1. Back");
 
-					// TODO : List player items for sale
+					List<Item> playerItems = player.getItems();
 
-					int sellChoice = commandParser.readInt(new int[]{1});
+					// List all player items
+					for (int i = 0; i < playerItems.size(); i++) {
+						Item itemToSell = playerItems.get(i);
+						System.out.printf("%d. Sell %s (%dG)%n", i + 2, itemToSell.Name, itemToSell.Cost);
+					}
+
+					// Dynamically populate choices based on player items
+					int[] sellChoices = new int[playerItems.size() + 1];
+					for (int i = 0; i < sellChoices.length; i++) {
+						sellChoices[i] = i + 1;
+					}
+
+					int sellChoice = commandParser.readInt(sellChoices);
 
 					// Return to shop menu
 					if (sellChoice == 1)
 						break;
+
+					// Sell item
+					int itemIndex = sellChoice - 2;
+					Item itemSold = playerItems.get(itemIndex);
+
+					player.Gold += itemSold.Cost;
+					System.out.printf("%n[Player %s] sold %s for %dG%n",
+						player.getId(), itemSold.Name, itemSold.Cost);
+
+					player.removeItem(itemIndex);
 
 					break;
 			}
