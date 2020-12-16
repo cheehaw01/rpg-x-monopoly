@@ -29,19 +29,22 @@ public class Game {
 		while (players.size() > 0) {
 			Player currPlayer = players.get(currentPlayerIndex);
 
-			// TODO : Check stats
-
 			System.out.printf("%n[Player %d] turn%n", currPlayer.getId());
 			System.out.println("1. Roll dice");
-			System.out.println("2. Quit");
+			System.out.println("2. Check stats");
+			System.out.println("3. Quit");
 
-			int choice = commandParser.readInt(new int[]{1, 2});
+			int choice = commandParser.readInt(new int[]{1, 2, 3});
 
 			switch (choice) {
 				case 1:
 					movePlayer(currPlayer);
 					break;
 				case 2:
+					checkStats(currPlayer);
+					currentPlayerIndex--; // So that player doesn't lose turn
+					break;
+				case 3:
 					removePlayer(currPlayer);
 					break;
 				default:
@@ -58,36 +61,37 @@ public class Game {
 		System.out.println("Game end");
 	}
 
-    // TODO : Random tile generation using predetermined values 
-	private void generateTiles() {
-        Random rand = new Random();
-		
-        boardTiles = new TileType[32];
-        for (int i = 0; i < 32; i++){
-            //initialize all tiles as empty
-            boardTiles[i] = TileType.EMPTY;
-        }
-        //hard code non-monster tiles
-        boardTiles[0] = TileType.START;
-        boardTiles[16] = TileType.CHEST;
-        boardTiles[8] = boardTiles[24] = TileType.SHOP;
+	// ================ SETUP ================
 
-        TileType[] monster_types = {TileType.SIN_M, TileType.DUO_M, TileType.TRI_M};
-        int[] monster_count = {12, 8, 4};
-        //generate monster_type[i] tiles for monster_count[i] times
-        for (int i = 0; i < 3; i++){
-            int count = 0;
-            do{
-                //generate number from 1 to 31 (since 0 is START TILE) 
-                int pos = rand.nextInt(31) + 1; 
-                //leave hard-coded tiles untouuched
-                if (pos % 4 != 0 && boardTiles[pos] == TileType.EMPTY){
-                    count++;
-                    boardTiles[pos] = monster_types[i];
-                }
-            }
-            while (count < monster_count[i]);
-        }	
+	private void generateTiles() {
+		Random rand = new Random();
+
+		boardTiles = new TileType[32];
+		for (int i = 0; i < 32; i++) {
+			//initialize all tiles as empty
+			boardTiles[i] = TileType.EMPTY;
+		}
+		//hard code non-monster tiles
+		boardTiles[0] = TileType.START;
+		boardTiles[16] = TileType.CHEST;
+		boardTiles[8] = boardTiles[24] = TileType.SHOP;
+
+		TileType[] monsterTypes = {TileType.SIN_M, TileType.DUO_M, TileType.TRI_M};
+		int[] monsterCount = {12, 8, 4};
+		//generate monster_type[i] tiles for monsterCount[i] times
+		for (int i = 0; i < 3; i++) {
+			int count = 0;
+			do {
+				//generate number from 1 to 31 (since 0 is START TILE)
+				int pos = rand.nextInt(31) + 1;
+				//leave hard-coded tiles untouched
+				if (pos % 4 != 0 && boardTiles[pos] == TileType.EMPTY) {
+					count++;
+					boardTiles[pos] = monsterTypes[i];
+				}
+			}
+			while (count < monsterCount[i]);
+		}
 	}
 
 	private void initPlayers() {
@@ -107,6 +111,8 @@ public class Game {
 		itemList.add(new Item("Armor", 50, 0, 0, 3, -1));
 		itemList.add(new Item("Potion", 50, 3, 1, 0, 1));
 	}
+
+	// ================ PLAYER ================
 
 	private void movePlayer(Player player) {
 		player.move(DiceRoller.Roll());
@@ -137,6 +143,20 @@ public class Game {
 		System.out.printf("[Player %d] quit the game%n%n", player.getId());
 		currentPlayerIndex--;
 	}
+
+	private void checkStats(Player player) {
+		System.out.printf("%n[Player %d] stats%n", player.getId());
+
+		System.out.printf("Level: %d%n", player.Level);
+		System.out.printf("Exp: %d%n", player.Exp);
+		System.out.printf("Health: %d%n", player.Health);
+		System.out.printf("Strength: %d%n", player.Strength);
+		System.out.printf("Defense: %d%n", player.Defense);
+		System.out.printf("Agility: %d%n", player.Agility);
+		System.out.printf("Gold: %d%n", player.Gold);
+	}
+
+	// ================ GAMEPLAY ================
 
 	private void giveRandomItem(Player player) {
 		Random r = new Random();
@@ -209,7 +229,7 @@ public class Game {
 					break;
 			}
 
-			System.out.printf("%n[Player %d] is in a shop%n", player.getId());
+			System.out.printf("%n[Player %d](%dG) is in a shop%n", player.getId(), player.Gold);
 			System.out.println("1. Exit shop");
 			System.out.println("2. Buy item");
 			System.out.println("3. Sell item");
@@ -220,10 +240,10 @@ public class Game {
 		System.out.printf("%n[Player %d] left shop%n", player.getId());
 	}
 
+	// ================ UTIL ================
+
 	private TileType getTileOn(int index) {
 		index = Util.loopClampInRange(index, 0, boardTiles.length - 1);
 		return boardTiles[index];
 	}
 }
-
-
