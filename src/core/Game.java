@@ -58,41 +58,36 @@ public class Game {
 		System.out.println("Game end");
 	}
 
+    // TODO : Random tile generation using predetermined values 
 	private void generateTiles() {
-		boardTiles = new TileType[]{
-			TileType.START,
-			TileType.DUO_M,
-			TileType.TRI_M,
-			TileType.SIN_M,
-			TileType.EMPTY,
-			TileType.DUO_M,
-			TileType.SIN_M,
-			TileType.SIN_M,
-			TileType.SHOP,
-			TileType.DUO_M,
-			TileType.SIN_M,
-			TileType.DUO_M,
-			TileType.EMPTY,
-			TileType.SIN_M,
-			TileType.SIN_M,
-			TileType.TRI_M,
-			TileType.CHEST,
-			TileType.SIN_M,
-			TileType.DUO_M,
-			TileType.TRI_M,
-			TileType.EMPTY,
-			TileType.SIN_M,
-			TileType.DUO_M,
-			TileType.SIN_M,
-			TileType.SHOP,
-			TileType.SIN_M,
-			TileType.DUO_M,
-			TileType.DUO_M,
-			TileType.EMPTY,
-			TileType.TRI_M,
-			TileType.SIN_M,
-			TileType.SIN_M
-		};
+        Random rand = new Random();
+		
+        boardTiles = new TileType[32];
+        for (int i = 0; i < 32; i++){
+            //initialize all tiles as empty
+            boardTiles[i] = TileType.EMPTY;
+        }
+        //hard code non-monster tiles
+        boardTiles[0] = TileType.START;
+        boardTiles[16] = TileType.CHEST;
+        boardTiles[8] = boardTiles[24] = TileType.SHOP;
+
+        TileType[] monster_types = {TileType.SIN_M, TileType.DUO_M, TileType.TRI_M};
+        int[] monster_count = {12, 8, 4};
+        //generate monster_type[i] tiles for monster_count[i] times
+        for (int i = 0; i < 3; i++){
+            int count = 0;
+            do{
+                //generate number from 1 to 31 (since 0 is START TILE) 
+                int pos = rand.nextInt(31) + 1; 
+                //leave hard-coded tiles untouuched
+                if (pos % 4 != 0 && boardTiles[pos] == TileType.EMPTY){
+                    count++;
+                    boardTiles[pos] = monster_types[i];
+                }
+            }
+            while (count < monster_count[i]);
+        }	
 	}
 
 	private void initPlayers() {
