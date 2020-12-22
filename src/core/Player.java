@@ -13,7 +13,8 @@ public class Player {
 	public int Gold = 200;
 	public int Exp = 0;
 
-	private final ArrayList<Item> inventory = new ArrayList<>(5);
+	private final int maxCapacity = 1;
+	private final ArrayList<Item> inventory = new ArrayList<>();
 
 	// STATE
 	private int index = 0; // Counts from 0 - 31
@@ -39,13 +40,22 @@ public class Player {
 		return inventory;
 	}
 
-	public void addItem(Item item, int quantity) {
-		for (int i = 0; i < quantity; i++) {
-			inventory.add(item);
-		}
+	public boolean addItem(Item item) {
+		if(inventory.size() >= maxCapacity)
+			return false;
+
+		Strength += item.StrengthBonus;
+		Defense += item.DefenseBonus;
+		Agility += item.AgilityBonus;
+
+		return inventory.add(item);
 	}
 
 	public void removeItem(int inventoryIndex) {
-		inventory.remove(inventoryIndex);
+		Item item = inventory.remove(inventoryIndex);
+
+		Strength -= item.StrengthBonus;
+		Defense -= item.DefenseBonus;
+		Agility -= item.AgilityBonus;
 	}
 }

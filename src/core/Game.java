@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Game {
-	TileType[] boardTiles;
+	Board board;
 
 	List<Player> players;
 	int currentPlayerIndex;
@@ -17,15 +17,18 @@ public class Game {
 	CommandParser commandParser;
 
 	public Game() {
+		board = new Board();
+
 		commandParser = new CommandParser();
 		itemList = new ArrayList<>();
 
-		generateTiles();
 		initPlayers();
 		setupItems();
 	}
 
 	public void run() {
+		board.draw();
+
 		while (players.size() > 0) {
 			Player currPlayer = players.get(currentPlayerIndex);
 
@@ -63,37 +66,6 @@ public class Game {
 
 	// ================ SETUP ================
 
-	private void generateTiles() {
-		Random rand = new Random();
-
-		boardTiles = new TileType[32];
-		for (int i = 0; i < 32; i++) {
-			//initialize all tiles as empty
-			boardTiles[i] = TileType.EMPTY;
-		}
-		//hard code non-monster tiles
-		boardTiles[0] = TileType.START;
-		boardTiles[16] = TileType.CHEST;
-		boardTiles[8] = boardTiles[24] = TileType.SHOP;
-
-		TileType[] monsterTypes = {TileType.SIN_M, TileType.DUO_M, TileType.TRI_M};
-		int[] monsterCount = {12, 8, 4};
-		//generate monster_type[i] tiles for monsterCount[i] times
-		for (int i = 0; i < 3; i++) {
-			int count = 0;
-			do {
-				//generate number from 1 to 31 (since 0 is START TILE)
-				int pos = rand.nextInt(31) + 1;
-				//leave hard-coded tiles untouched
-				if (pos % 4 != 0 && boardTiles[pos] == TileType.EMPTY) {
-					count++;
-					boardTiles[pos] = monsterTypes[i];
-				}
-			}
-			while (count < monsterCount[i]);
-		}
-	}
-
 	private void initPlayers() {
 		System.out.println("Enter player amount:");
 		int initialPlayerCount = commandParser.readInt(new int[]{2, 3, 4});
@@ -116,8 +88,9 @@ public class Game {
 
 	private void movePlayer(Player player) {
 		player.move(DiceRoller.Roll());
-		TileType currTile = getTileOn(player.getIndex());
+		TileType currTile = board.getTileOn(player.getIndex());
 
+		board.draw();
 		System.out.printf(
 			"%n[Player %d] moved and landed on %s%n",
 			player.getId(), currTile);
@@ -140,11 +113,14 @@ public class Game {
 
 	private void removePlayer(Player player) {
 		players.remove(player);
-		System.out.printf("[Player %d] quit the game%n%n", player.getId());
+
+		board.draw();
+		System.out.printf("[Player %d] quit the game%n", player.getId());
 		currentPlayerIndex--;
 	}
 
 	private void checkStats(Player player) {
+		board.draw();
 		System.out.printf("%n[Player %d] stats%n", player.getId());
 
 		System.out.printf("Level: %d%n", player.Level);
@@ -163,9 +139,15 @@ public class Game {
 
 		int itemIndex = r.nextInt(itemList.size());
 		Item item = itemList.get(itemIndex);
-		player.addItem(item, 1);
 
-		System.out.printf("%n[Player %d] gets %s from chest%n", player.getId(), item.Name);
+		if(player.addItem(item)){
+			System.out.printf("%n[Player %d] gets %s from chest%n", player.getId(), item.Name);
+		}
+		else {
+			// Not enough space in inventory
+			System.out.printf("%n[Player %d] Not enough space in inventory%n",
+				player.getId());
+		}
 	}
 
 	private void setupShop(Player player) {
@@ -188,6 +170,7 @@ public class Game {
 		while (choice != 1) {
 			switch (choice) {
 				case 2:
+					board.draw();
 					System.out.printf("%n[Player %d](%dG) Choose item to buy%n", player.getId(), player.Gold);
 					System.out.println("1. Back");
 					System.out.printf("2. %s (%dG)%n", shopItems.get(0).Name, shopItems.get(0).Cost);
@@ -196,17 +179,27 @@ public class Game {
 
 					int buyChoice = commandParser.readInt(new int[]{1, 2, 3, 4});
 
+					board.draw();
+
 					// Return to shop menu
-					if (buyChoice == 1)
+					if (buyChoice == 1) {
 						break;
+					}
 
 					Item itemToBuy = shopItems.get(buyChoice - 2);
 
 					if (player.Gold >= itemToBuy.Cost) {
-						player.Gold -= itemToBuy.Cost;
-						player.addItem(itemToBuy, 1);
-						System.out.printf("%n[Player %d] bought %s for %dG. Remaining gold is %dG.%n",
-							player.getId(), itemToBuy.Name, itemToBuy.Cost, player.Gold);
+						if(player.addItem(itemToBuy)) {
+							player.Gold -= itemToBuy.Cost;
+
+							System.out.printf("%n[Player %d] bought %s for %dG. Remaining gold is %dG.%n",
+								player.getId(), itemToBuy.Name, itemToBuy.Cost, player.Gold);
+						}
+						else {
+							// Not enough space in inventory
+							System.out.printf("%n[Player %d] Not enough space in inventory%n",
+								player.getId());
+						}
 					}
 					else {
 						System.out.printf("[Player %d] gold is not enough%n", player.getId());
@@ -214,6 +207,7 @@ public class Game {
 
 					break;
 				case 3:
+					board.draw();
 					System.out.printf("%n[Player %d] Choose item to sell%n", player.getId());
 					System.out.println("1. Back");
 
@@ -233,9 +227,12 @@ public class Game {
 
 					int sellChoice = commandParser.readInt(sellChoices);
 
+					board.draw();
+
 					// Return to shop menu
-					if (sellChoice == 1)
+					if (sellChoice == 1) {
 						break;
+					}
 
 					// Sell item
 					int itemIndex = sellChoice - 2;
@@ -258,13 +255,7 @@ public class Game {
 			choice = commandParser.readInt(new int[]{1, 2, 3});
 		}
 
+		board.draw();
 		System.out.printf("%n[Player %d] left shop%n", player.getId());
-	}
-
-	// ================ UTIL ================
-
-	private TileType getTileOn(int index) {
-		index = Util.loopClampInRange(index, 0, boardTiles.length - 1);
-		return boardTiles[index];
 	}
 }

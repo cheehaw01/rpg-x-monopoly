@@ -10,10 +10,7 @@ public class Main {
 	// 2. Use camelCase for variable names and functions (Java convention)
 
 	// Features to leave for later
-	// 1. Game board drawing
-	// 2. Battle system
-	// 3. Item special abilities (ex. Smoke bomb)
-	// 4. Console clearing
+	// 1. Battles with other players
 
 	public static void main(String[] args) {
 		Game game = new Game();
