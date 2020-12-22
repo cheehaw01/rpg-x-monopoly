@@ -39,7 +39,7 @@ public class Board {
 	}
 
 	public TileType getTileOn(int index) {
-		index = Util.loopClampInRange(index, 0, boardTiles.length - 1);
+		index = Util.wrapAroundClamp(index, 0, boardTiles.length - 1);
 		return boardTiles[index];
 	}
 

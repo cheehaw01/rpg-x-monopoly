@@ -12,13 +12,9 @@ import java.util.Scanner;
 // > [option number]
 
 public class CommandParser {
-	private final Scanner scn;
+	private final static Scanner scn = new Scanner(System.in);
 
-	public CommandParser() {
-		scn = new Scanner(System.in);
-	}
-
-	public int readInt(int[] choices) {
+	public static int readInt(int[] choices) {
 		while (true) {
 			try {
 				int v = getIntInput();
@@ -36,7 +32,7 @@ public class CommandParser {
 		}
 	}
 
-	private int getIntInput() {
+	private static int getIntInput() {
 		System.out.print("> ");
 		return scn.nextInt();
 	}

@@ -11,6 +11,7 @@ public class Main {
 
 	// Features to leave for later
 	// 1. Battles with other players
+	// 2. Using items
 
 	public static void main(String[] args) {
 		Game game = new Game();

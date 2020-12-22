@@ -14,12 +14,8 @@ public class Game {
 
 	List<Item> itemList;
 
-	CommandParser commandParser;
-
 	public Game() {
 		board = new Board();
-
-		commandParser = new CommandParser();
 		itemList = new ArrayList<>();
 
 		initPlayers();
@@ -29,7 +25,7 @@ public class Game {
 	public void run() {
 		board.draw();
 
-		while (players.size() > 0) {
+		while (players.size() > 1) {
 			Player currPlayer = players.get(currentPlayerIndex);
 
 			System.out.printf("%n[Player %d] turn%n", currPlayer.getId());
@@ -37,7 +33,7 @@ public class Game {
 			System.out.println("2. Check stats");
 			System.out.println("3. Quit");
 
-			int choice = commandParser.readInt(new int[]{1, 2, 3});
+			int choice = CommandParser.readInt(new int[]{1, 2, 3});
 
 			switch (choice) {
 				case 1:
@@ -54,21 +50,18 @@ public class Game {
 					break;
 			}
 
-			// Prevent out of bound exceptions
-			if (players.size() > 0) {
-				currentPlayerIndex++;
-				currentPlayerIndex = Util.loopClampInRange(currentPlayerIndex, 0, players.size());
-			}
+			currentPlayerIndex++;
+			currentPlayerIndex = Util.wrapAroundClamp(currentPlayerIndex, 0, players.size());
 		}
 
-		System.out.println("Game end");
+		System.out.printf("%n[Player %s] WON! %n", players.get(0).getId());
 	}
 
 	// ================ SETUP ================
 
 	private void initPlayers() {
 		System.out.println("Enter player amount:");
-		int initialPlayerCount = commandParser.readInt(new int[]{2, 3, 4});
+		int initialPlayerCount = CommandParser.readInt(new int[]{2, 3, 4});
 
 		players = new ArrayList<>();
 
@@ -98,9 +91,15 @@ public class Game {
 		switch (currTile) {
 			case EMPTY:
 			case START:
-			case SIN_M: // Ignore for now
-			case DUO_M: // Ignore for now
-			case TRI_M: // Ignore for now
+				break;
+			case SIN_M:
+				new Battle(player, 1).start(board);
+				break;
+			case DUO_M:
+				new Battle(player, 2).start(board);
+				break;
+			case TRI_M:
+				new Battle(player, 3).start(board);
 				break;
 			case CHEST:
 				giveRandomItem(player);
@@ -115,7 +114,7 @@ public class Game {
 		players.remove(player);
 
 		board.draw();
-		System.out.printf("[Player %d] quit the game%n", player.getId());
+		System.out.printf("%n[Player %d] quit the game%n", player.getId());
 		currentPlayerIndex--;
 	}
 
@@ -156,7 +155,7 @@ public class Game {
 		System.out.println("2. Buy item");
 		System.out.println("3. Sell item");
 
-		int choice = commandParser.readInt(new int[]{1, 2, 3});
+		int choice = CommandParser.readInt(new int[]{1, 2, 3});
 
 		Random r = new Random();
 
@@ -177,7 +176,7 @@ public class Game {
 					System.out.printf("3. %s (%dG)%n", shopItems.get(1).Name, shopItems.get(1).Cost);
 					System.out.printf("4. %s (%dG)%n", shopItems.get(2).Name, shopItems.get(2).Cost);
 
-					int buyChoice = commandParser.readInt(new int[]{1, 2, 3, 4});
+					int buyChoice = CommandParser.readInt(new int[]{1, 2, 3, 4});
 
 					board.draw();
 
@@ -225,7 +224,7 @@ public class Game {
 						sellChoices[i] = i + 1;
 					}
 
-					int sellChoice = commandParser.readInt(sellChoices);
+					int sellChoice = CommandParser.readInt(sellChoices);
 
 					board.draw();
 
@@ -252,7 +251,7 @@ public class Game {
 			System.out.println("2. Buy item");
 			System.out.println("3. Sell item");
 
-			choice = commandParser.readInt(new int[]{1, 2, 3});
+			choice = CommandParser.readInt(new int[]{1, 2, 3});
 		}
 
 		board.draw();
