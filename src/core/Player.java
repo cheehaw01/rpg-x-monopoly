@@ -47,6 +47,7 @@ public class Player {
 		Strength += item.StrengthBonus;
 		Defense += item.DefenseBonus;
 		Agility += item.AgilityBonus;
+		Agility = Math.max(0, Math.min(Agility, 90));
 
 		return inventory.add(item);
 	}
@@ -57,5 +58,6 @@ public class Player {
 		Strength -= item.StrengthBonus;
 		Defense -= item.DefenseBonus;
 		Agility -= item.AgilityBonus;
+		Agility = Math.max(0, Math.min(Agility, 90));
 	}
 }
