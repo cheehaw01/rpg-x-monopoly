@@ -50,6 +50,10 @@ public class Game {
 					break;
 			}
 
+			if (currPlayer.Health <= 0){
+				removePlayer(currPlayer);
+			}
+
 			currentPlayerIndex++;
 			currentPlayerIndex = Util.wrapAroundClamp(currentPlayerIndex, 0, players.size());
 		}
