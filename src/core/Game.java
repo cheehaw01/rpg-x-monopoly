@@ -117,7 +117,6 @@ public class Game {
 	private void removePlayer(Player player) {
 		players.remove(player);
 
-		board.draw();
 		System.out.printf("%n[Player %d] quit the game%n", player.getId());
 		currentPlayerIndex--;
 	}

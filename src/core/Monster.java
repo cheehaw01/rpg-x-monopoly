@@ -13,7 +13,7 @@ public class Monster {
 		// Maybe generate values based on player level
 
 		Health = Util.RandomBetween(5, 15);
-		Strength = Util.RandomBetween(1, 3);
+		Strength = Util.RandomBetween(2, 4);
 		Defense = Util.RandomBetween(1, 3);
 		Agility = Util.RandomBetween(1, 3);
 

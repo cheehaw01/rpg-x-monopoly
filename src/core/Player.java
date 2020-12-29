@@ -13,7 +13,7 @@ public class Player {
 	public int Gold = 200;
 	public int Exp = 0;
 
-	private final int maxCapacity = 1;
+	private final int maxCapacity = 4;
 	private final ArrayList<Item> inventory = new ArrayList<>();
 
 	// STATE
