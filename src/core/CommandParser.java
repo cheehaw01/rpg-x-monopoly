@@ -20,18 +20,24 @@ public class CommandParser {
 
 	public int readInt(int[] choices) {
 		while (true) {
-			int v = getIntInput();
+			try {
+				int v = getIntInput();
 
-			if (Util.intArrayContains(choices, v))
-				return v;
-
-			System.out.println("Invalid choice. Chose again.");
+				if (Util.intArrayContains(choices, v)) {
+					return v;
+				}
+				else {
+					System.out.println("Invalid choice. Chose again.");
+				}
+			} catch (Exception ignored) {
+				System.out.println("Invalid format. Try again.");
+				scn.next();
+			}
 		}
 	}
 
-	// TODO : Repeatedly get input and check format (try-catch)
 	private int getIntInput() {
-			System.out.print("> ");
-			return scn.nextInt();
+		System.out.print("> ");
+		return scn.nextInt();
 	}
 }
