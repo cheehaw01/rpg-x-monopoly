@@ -64,7 +64,7 @@ public class Game {
 	// ================ SETUP ================
 
 	private void initPlayers() {
-		System.out.println("Enter player amount:");
+		System.out.print("Enter player amount:");
 		int initialPlayerCount = CommandParser.readInt(new int[]{2, 3, 4});
 
 		players = new ArrayList<>();
@@ -125,6 +125,7 @@ public class Game {
 		board.draw();
 		System.out.printf("%n[Player %d] stats%n", player.getId());
 
+		System.out.printf("Type: %s%n", player.Type);
 		System.out.printf("Level: %d%n", player.Level);
 		System.out.printf("Exp: %d%n", player.Exp);
 		System.out.printf("Health: %d%n", player.Health);
@@ -134,6 +135,7 @@ public class Game {
 		System.out.printf("Gold: %d%n", player.Gold);
 	}
 
+	
 	// ================ GAMEPLAY ================
 
 	private void giveRandomItem(Player player) {
