@@ -1,22 +1,32 @@
 package core;
 
 public class Battle {
+	//instance variables for PvM
 	Player player;
 	Monster[] monsters;
 
+	//instance variables for PvP
+	Player player1, player2;
+
 	boolean isPlayerTurn = true;
+
+	
 
 	public Battle(Player player, int monsterCount) {
 		this.player = player;
 		monsters = new Monster[monsterCount];
 
 		for (int i = 0; i < monsters.length; i++) {
-			monsters[i] = new Monster();
+			monsters[i] = new Monster(player);
 		}
 	}
 
+	public Battle(Player player1, Player player2){
+		this.player1 = player1;
+		this.player2 = player2;
+	}
+
 	public void start(Board board) {
-		//might want to change this name to differentiate PvM and PvP
 		while ((player.Health > 0 && monsters.length > 0)) {
 			if (isPlayerTurn) {
 				System.out.printf("%n[Player %d](%dHP) is in battle%n", player.getId(), player.Health);
@@ -64,7 +74,7 @@ public class Battle {
 
 							int damageToMonster = player.Strength * 100 / (100 + monsterToAttack.Defense);
 							monsterToAttack.Health -= Math.min(monsterToAttack.Health, damageToMonster);
-							System.out.printf("%n[Player %d](%dHP) inflicted %dHP damage on Lv%d %sd(%dHP)%n",
+							System.out.printf("%n[Player %d](%dHP) inflicted %dHP damage on Lv%d %s(%dHP)%n",
 								player.getId(), player.Health, damageToMonster, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
 						}
 						else {
@@ -137,6 +147,7 @@ public class Battle {
 						player.Health -= Math.min(player.Health, damageToPlayer);
 						System.out.printf("%nLv%d %s(%dHP) inflicted %dHP damage on [Player %d](%dHP)%n",
 							attackingMonster.Level, attackingMonster.Type, attackingMonster.Health, damageToPlayer, player.getId(), player.Health);
+						attackingMonster.useAbility(player);//use monster ability
 						if (player.Health <= 0) {
 							//player defeated
 							System.out.printf("%n[Player %d](%dHP) was defeated by Lv %d %s(%dHP)%n",
@@ -157,5 +168,116 @@ public class Battle {
 		}
 
 	}
+
+	public void PKStart(Board board) {
+		System.out.printf("%n[Player %d](%dHP) will fight [Player %d](%dHP)%n",
+		player1.getId(), player1.Health, player2.getId(), player2.Health);
+
+		while ((player1.Health > 0 && player2.Health > 0)) {
+			if (isPlayerTurn){
+				System.out.printf("%n[Player %d](%dHP) is in battle%n", player1.getId(), player1.Health);
+				System.out.printf("1. Attack [Player %d](%dHP)%n", player2.getId(), player2.Health);
+				System.out.println("2. Use Item");
+				System.out.printf("3. Flee(%d%c)%n", player1.Agility, '%');
+	
+				int choice = CommandParser.readInt(new int[]{1, 2, 3});
+	
+				switch (choice) {
+					case 1:
+						board.draw();
+						attackPlayer(player1, player2);
+						if (player2.Health <= 0){
+							return;//end battle already
+						}
+						break;
+					case 2:
+						board.draw();
+						System.out.printf("%nNo idea how to do item using. Leave it for later%n");
+						break;
+					case 3:
+						board.draw();
+	
+						if (Math.random() * 100 < player1.Agility) {
+							System.out.printf("%n[Player %d] fled the battle%n",
+								player1.getId());
+							return;
+						}
+						else {
+							System.out.printf("%n[Player %d] flee unsuccessful%n",
+								player1.getId());
+						}
+						break;	
+				}
+			}
+			else{
+				System.out.printf("%n[Player %d](%dHP) is in battle%n", player2.getId(), player2.Health);
+				System.out.printf("1. Attack [Player %d](%dHP)%n", player1.getId(), player1.Health);
+				System.out.println("2. Use Item");
+				System.out.printf("3. Flee(%d%c)%n", player2.Agility, '%');
+	
+				int choice = CommandParser.readInt(new int[]{1, 2, 3});
+	
+				switch (choice) {
+					case 1:
+						board.draw();
+						attackPlayer(player2, player1);
+						break;
+					case 2:
+						board.draw();
+						System.out.printf("%nNo idea how to do item using. Leave it for later%n");
+						break;
+					case 3:
+						board.draw();
+	
+						if (Math.random() * 100 < player2.Agility) {
+							System.out.printf("%n[Player %d] fled the battle%n",
+								player2.getId());
+							return;
+						}
+						else {
+							System.out.printf("%n[Player %d] flee unsuccessful%n",
+								player2.getId());
+						}
+						break;
+					}	
+			}
+			isPlayerTurn = !isPlayerTurn;
+		}	
+	}
+
+	public void attackPlayer(Player player, Player playerToAttack){				
+		if (Math.random() * player.Agility > Math.random() * playerToAttack.Agility) {
+
+			int damage = player.Strength * 100 / (100 + playerToAttack.Defense);
+			playerToAttack.Health -= Math.min(playerToAttack.Health, damage);
+			System.out.printf("%n[Player %d](%dHP) inflicted %dHP damage on [Player %d](%dHP)%n",
+				player.getId(), player.Health, damage, playerToAttack.getId(), playerToAttack.Health);
+		}
+		else {
+			//dodged
+			System.out.printf("%n[Player %d](%dHP) dodged [Player %d](%dHP)'s attack%n",
+				playerToAttack.getId(), playerToAttack.Health, player.getId(), player.Health);
+		}
+
+		//player defeated
+		if (playerToAttack.Health <= 0) {
+			System.out.printf("%n[Player %d](%dHP) defeated [Player %d](%dHP)%n",
+				player.getId(), player.Health, playerToAttack.getId(), playerToAttack.Health);
+
+			//player gets gold = 50% playerToAttack gold 
+			player.Gold += (playerToAttack.Gold / 2);
+			System.out.printf("%n[Player %d](%dHP) gained %d Gold%n",
+			player.getId(), player.Health, (playerToAttack.Gold / 2));
+
+			//player gains exp = 50% playerToAttack exp
+			player.Exp += playerToAttack.Exp / 2;
+			System.out.printf("%n[Player %d](%dHP) gained %d EXP%n",
+				player.getId(), player.Health, playerToAttack.Exp / 2);
+
+			//check for level up
+			player.levelUp();
+		}
+	}
+		
 }
 
