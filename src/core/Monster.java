@@ -92,7 +92,7 @@ public class Monster {
 			}
 		}
 		else if (Type.equals("Fallen Mage")){
-			if (Util.RandomBetween(1, 10) > 3)//70%chance{				
+			if (Util.RandomBetween(1, 10) > 3){//70%chance{				
 				//regens 10*Lv% current health
 				System.out.printf("Lv%d %s(%dHP) used ability: Regeneration%n", Level, Type, Health);
 				int regen = (int)(Health * 0.1 * Level);
