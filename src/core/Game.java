@@ -76,9 +76,37 @@ public class Game {
 	}
 
 	private void setupItems() {
-		itemList.add(new Item("Sword", 50, 0, 3, 0, 0));
-		itemList.add(new Item("Armor", 50, 0, 0, 3, -1));
-		itemList.add(new Item("Potion", 50, 3, 1, 0, 1));
+		itemList.add(new Item("Junk", 0, 0, 0, 0, 0));
+		itemList.add(new Item("Smokebomb", 400, 0, 0, 0, 0));
+		itemList.add(new Item("Basic Sword", 200, 0, 10, 0, 0));
+		itemList.add(new Item("Basic Wand", 200, 0, 10, 0, 0));
+		itemList.add(new Item("Basic Bow", 200, 0, 10, 0, 0));
+		itemList.add(new Item("Leather shirt", 400, 0, 0, 20, 10));
+		itemList.add(new Item("Shield", 700, 0, 0, 60, 0));
+		itemList.add(new Item("Standard Sword", 600, 0, 35, 0, 0));
+		itemList.add(new Item("Magic Wand", 600, 0, 30, 10, -10));
+		itemList.add(new Item("Standard Bow", 600, 0, 30, 5, 0));
+		itemList.add(new Item("Steel Armour", 800, 0, 0, 45, -10));
+		itemList.add(new Item("Strength Potion", 700, 0, 0, 0, 0)); 
+		itemList.add(new Item("Agility Potion", 700, 0, 0, 0, 0));
+		itemList.add(new Item("Defence Potion", 700, 0, 0, 0, 0)); 
+		itemList.add(new Item("HP Potion", 600, 0, 0, 0, 0));
+		itemList.add(new Item("Antidote", 600, 0, 0, 0, 0));
+		itemList.add(new Item("Lucky Potion", 600, 0, 0, 0, 0));
+		itemList.add(new Item("Barricade", 700, 0, 0, 0, 0));
+		itemList.add(new Item("Double Dice", 700, 0, 0, 0, 0));
+		itemList.add(new Item("Great Sword", 1100, 0, 75, 0, -20));
+		itemList.add(new Item("Magic Book", 1100, 100, 60, 0, 0));
+		itemList.add(new Item("Crossbow", 1100, 0, 65, 0, -10));
+		itemList.add(new Item("Titanium Armour", 1500, 0, 75, 0, -20));
+		itemList.add(new Item("Ability Potion", 1400, 0, 0, 0, 0));
+		itemList.add(new Item("Poison", 800, 0, 0, 0, 0));
+		itemList.add(new Item("Experience Potion", 2000, 0, 0, 0, 0));
+		itemList.add(new Item("Excalibur", 2000, 0, 130, 10, 0));
+		itemList.add(new Item("Infinity Ring", 2000, 200, 115, 0, 0));
+		itemList.add(new Item("Sniper rifle", 2000, 0, 150, 0, -10));
+		itemList.add(new Item("Energy Shield", 2000, 0, 0, 110, 0));
+		// Item(String name, int cost, int healBonus, int strengthBonus, int defenseBonus, int agilityBonus)
 	}
 
 	// ================ PLAYER ================
@@ -141,8 +169,23 @@ public class Game {
 	private void giveRandomItem(Player player) {
 		Random r = new Random();
 
-		int itemIndex = r.nextInt(itemList.size());
+		// 10% - very rare, 20% - rare, 30% moderate, 40% common
+		int itemAppear = r.nextInt(100) + 1;
+		int itemIndex = 0;
+		if(itemAppear <= 5 || itemAppear >= 95) {
+			itemIndex = r.nextInt(6);
+		}
+		else if(itemAppear <= 15 || itemAppear >= 75) {
+			itemIndex = r.nextInt(19);
+		}
+		else if(itemAppear <= 40 || itemAppear >= 60) {
+			itemIndex = r.nextInt(26);
+		}
+		else {
+			itemIndex = r.nextInt(itemList.size());
+		}
 		Item item = itemList.get(itemIndex);
+		player.addItem(item, 1);
 
 		if(player.addItem(item)){
 			System.out.printf("%n[Player %d] gets %s from chest%n", player.getId(), item.Name);
@@ -167,7 +210,7 @@ public class Game {
 		// Shops only sells 3 random items at once
 		List<Item> shopItems = new ArrayList<>();
 		for (int i = 0; i < 3; i++) {
-			shopItems.add(itemList.get(r.nextInt(3)));
+			shopItems.add(itemList.get(r.nextInt(25)));
 		}
 
 		// Loop until leave shop
