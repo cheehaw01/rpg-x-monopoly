@@ -44,16 +44,28 @@ public class Game {
 					currentPlayerIndex--; // So that player doesn't lose turn
 					break;
 				case 3:
-					removePlayer(currPlayer);
+					//prevent mispressed quits
+					System.out.printf("%nPlayer %d: do you want to quit?%n1.Yes%n2.No%n",
+					 currPlayer.getId());
+					int quit = CommandParser.readInt(new int[]{1, 2});
+					if (quit == 1){
+						removePlayer(currPlayer);
+					}
+					else{
+						currentPlayerIndex--; //return to menu
+					}
 					break;
 				default:
 					break;
 			}
 
-			if (currPlayer.Health <= 0){
-				removePlayer(currPlayer);
+			for(Player player: players){
+				if (player.Health <= 0){
+					removePlayer(player);
+					break;
+				}
 			}
-
+			
 			currentPlayerIndex++;
 			currentPlayerIndex = Util.wrapAroundClamp(currentPlayerIndex, 0, players.size());
 		}
@@ -64,7 +76,7 @@ public class Game {
 	// ================ SETUP ================
 
 	private void initPlayers() {
-		System.out.print("Enter player amount:");
+		System.out.println("Enter player amount:");
 		int initialPlayerCount = CommandParser.readInt(new int[]{2, 3, 4});
 
 		players = new ArrayList<>();
@@ -93,17 +105,38 @@ public class Game {
 			player.getId(), currTile);
 
 		switch (currTile) {
-			case EMPTY:
 			case START:
+				//TODO: allow check stats and use items for START and EMPTY
+				break;
+			case EMPTY:
+				if (sameTilePlayers(player) != null){
+					new Battle(player, sameTilePlayers(player)).PKStart(board);
+				}
 				break;
 			case SIN_M:
-				new Battle(player, 1).start(board);
+				if (sameTilePlayers(player) == null){
+					new Battle(player, 1).start(board);
+				}
+				else{
+					new Battle(player, sameTilePlayers(player)).PKStart(board);
+				}
+				
 				break;
 			case DUO_M:
-				new Battle(player, 2).start(board);
+				if (sameTilePlayers(player) == null){
+					new Battle(player, 2).start(board);
+				}
+				else{
+					new Battle(player, sameTilePlayers(player)).PKStart(board);
+				}
 				break;
 			case TRI_M:
+			if (sameTilePlayers(player) == null){
 				new Battle(player, 3).start(board);
+			}
+			else{
+				new Battle(player, sameTilePlayers(player)).PKStart(board);
+			}
 				break;
 			case CHEST:
 				giveRandomItem(player);
@@ -133,6 +166,23 @@ public class Game {
 		System.out.printf("Defense: %d%n", player.Defense);
 		System.out.printf("Agility: %d%n", player.Agility);
 		System.out.printf("Gold: %d%n", player.Gold);
+	}
+
+	private Player sameTilePlayers(Player player) {
+		//checks if player landed on tile with other players
+		int sameTilePlayers = 0;
+		Player playerToBattle = null;
+		for (int i = 0; i < players.size(); i++){
+			if (player.getId() != players.get(i).getId() &&
+			player.getIndex() == players.get(i).getIndex()){		
+				playerToBattle = players.get(i);
+				sameTilePlayers++;
+			}
+		} 
+		if (sameTilePlayers == 1){
+			return playerToBattle;
+		}
+		return null;
 	}
 
 	
