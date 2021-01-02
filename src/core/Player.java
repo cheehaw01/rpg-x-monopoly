@@ -44,7 +44,51 @@ public class Player {
 	public int getId() {
 		return id;
 	}
+	
+	public void equipArmour(Item item) {
+		if (Armour.isBlank()) {
+			Armour = item.Name;
+			Strength += item.StrengthBonus;
+			Defense += item.DefenseBonus;
+			Agility += item.AgilityBonus;
+			Agility = Math.max(0, Math.min(Agility, 90));
+		}
+		else {
+			unequipArmour(item);
+			equipArmour(item);
+		}
+	}
 
+	public void unequipArmour(Item item) {
+		Armour = "";
+		Strength -= item.StrengthBonus;
+		Defense -= item.DefenseBonus;
+		Agility -= item.AgilityBonus;
+		Agility = Math.max(0, Math.min(Agility, 90));
+	}
+
+	public void equipWeapon(Item item) {
+		if (Weapon.isBlank()) {
+			Weapon = item.Name;
+			Strength += item.StrengthBonus;
+			Defense += item.DefenseBonus;
+			Agility += item.AgilityBonus;
+			Agility = Math.max(0, Math.min(Agility, 90));
+		}
+		else {
+			unequipWeapon(item);
+			equipWeapon(item);
+		}
+	}
+
+	public void unequipWeapon(Item item) {
+		Weapon = "";
+		Strength -= item.StrengthBonus;
+		Defense -= item.DefenseBonus;
+		Agility -= item.AgilityBonus;
+		Agility = Math.max(0, Math.min(Agility, 90));
+	}
+	
 	public ArrayList<Item> getItems() {
 		return inventory;
 	}
@@ -53,21 +97,12 @@ public class Player {
 		if(inventory.size() >= maxCapacity)
 			return false;
 
-		Strength += item.StrengthBonus;
-		Defense += item.DefenseBonus;
-		Agility += item.AgilityBonus;
-		Agility = Math.max(0, Math.min(Agility, 90));
-
 		return inventory.add(item);
 	}
 
 	public void removeItem(int inventoryIndex) {
 		Item item = inventory.remove(inventoryIndex);
 
-		Strength -= item.StrengthBonus;
-		Defense -= item.DefenseBonus;
-		Agility -= item.AgilityBonus;
-		Agility = Math.max(0, Math.min(Agility, 90));
 	}
 
 	public void levelUp(){
