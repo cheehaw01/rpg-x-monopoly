@@ -31,9 +31,10 @@ public class Game {
 			System.out.printf("%n[Player %d] turn%n", currPlayer.getId());
 			System.out.println("1. Roll dice");
 			System.out.println("2. Check stats");
-			System.out.println("3. Quit");
+			System.out.println("3. Inventory");
+			System.out.println("4. Quit");
 
-			int choice = CommandParser.readInt(new int[]{1, 2, 3});
+			int choice = CommandParser.readInt(new int[]{1, 2, 3, 4});
 
 			switch (choice) {
 				case 1:
@@ -44,6 +45,62 @@ public class Game {
 					currentPlayerIndex--; // So that player doesn't lose turn
 					break;
 				case 3:
+					List<Item> playerInventory = currPlayer.getItems();
+					System.out.printf("%n[Player %d] Armour: %s", currPlayer.getId(), currPlayer.Armour);
+					System.out.printf("%n[Player %d] Weapon: %s\n", currPlayer.getId(), currPlayer.Weapon);
+					System.out.printf("Choose same name equipment to unequip\n", currPlayer.getId());
+					System.out.printf("[Player %d] Choose item to use%n", currPlayer.getId());
+					System.out.println("1. Back");
+					// List all player items
+					for (int i = 0; i < playerInventory.size(); i++) {
+						Item itemToUse = playerInventory.get(i);
+						System.out.printf("%d. %s (%s)%n", i + 2, itemToUse.Name, itemToUse.Type);
+					}
+					int[] useChoices = new int[playerInventory.size() + 1];
+					for (int i = 0; i < useChoices.length; i++) {
+						useChoices[i] = i + 1;
+					}
+
+					int useChoice = CommandParser.readInt(useChoices);
+
+					if (useChoice == 1) {
+						continue;
+					}
+
+					// Use item
+					int itemIndex = useChoice - 2;
+					Item itemUse = playerInventory.get(itemIndex);
+					
+					if (itemUse.Type.equals("Armour")) {
+						if (itemUse.Name.equals(currPlayer.Armour)) {
+							currPlayer.unequipArmour(itemUse);
+							System.out.printf("%n[Player %d] unequip %s%n", currPlayer.getId(), itemUse.Name);
+						}
+						else {
+							currPlayer.equipArmour(itemUse);
+							System.out.printf("%n[Player %d] equip %s%n", currPlayer.getId(), currPlayer.Armour);
+
+						}
+					}
+					else if (itemUse.Type.equals("Weapon")) {
+						if (itemUse.Name.equals(currPlayer.Weapon)) {
+							currPlayer.unequipWeapon(itemUse);
+							System.out.printf("%n[Player %d] unequip %s%n", currPlayer.getId(), itemUse.Name);
+						}
+						else {
+							currPlayer.equipWeapon(itemUse);
+							System.out.printf("%n[Player %d] equip %s%n", currPlayer.getId(), currPlayer.Weapon);
+						}
+					}
+					else if (itemUse.Type.equals("Map")) {
+						currPlayer.removeItem(itemIndex);
+					}
+					else {
+						System.out.printf("%s can not be use right now.%n", itemUse.Name);
+					}
+					continue;
+					
+				case 4:
 					//prevent mispressed quits
 					System.out.printf("%nPlayer %d: do you want to quit?%n1.Yes%n2.No%n",
 					 currPlayer.getId());
@@ -88,9 +145,36 @@ public class Game {
 	}
 
 	private void setupItems() {
-		itemList.add(new Item("Sword", 50, 0, 3, 0, 0));
-		itemList.add(new Item("Armor", 50, 0, 0, 3, -1));
-		itemList.add(new Item("Potion", 50, 3, 1, 0, 1));
+		itemList.add(new Item("Junk", 0, "Battle", 0, 0, 0, 0));
+		itemList.add(new Item("Smokebomb", 400, "Battle", 0, 0, 0, 0));
+		itemList.add(new Item("Basic Sword", 200, "Weapon", 0, 10, 0, 0));
+		itemList.add(new Item("Basic Wand", 200, "Weapon", 0, 10, 0, 0));
+		itemList.add(new Item("Basic Bow", 200, "Weapon", 0, 10, 0, 0));
+		itemList.add(new Item("Leather shirt", 400, "Armour", 0, 0, 20, 10));
+		itemList.add(new Item("Shield", 700, "Weapon", 0, 0, 60, 0));
+		itemList.add(new Item("Standard Sword", 600, "Weapon", 0, 35, 0, 0));
+		itemList.add(new Item("Magic Wand", 600, "Weapon", 0, 30, 10, -10));
+		itemList.add(new Item("Standard Bow", 600, "Weapon", 0, 30, 5, 0));
+		itemList.add(new Item("Steel Armour", 800, "Armour", 0, 0, 45, -10));
+		itemList.add(new Item("Strength Potion", 700, "Battle", 0, 0, 0, 0)); 
+		itemList.add(new Item("Agility Potion", 700, "Battle", 0, 0, 0, 0));
+		itemList.add(new Item("Defence Potion", 700, "Battle", 0, 0, 0, 0)); 
+		itemList.add(new Item("HP Potion", 600, "Battle", 0, 0, 0, 0));
+		itemList.add(new Item("Antidote", 600, "Battle", 0, 0, 0, 0));
+		itemList.add(new Item("Lucky Potion", 600, "Battle", 0, 0, 0, 0));
+		itemList.add(new Item("Barricade", 700, "Map", 0, 0, 0, 0));
+		itemList.add(new Item("Double Dice", 700, "Map", 0, 0, 0, 0));
+		itemList.add(new Item("Great Sword", 1100, "Weapon", 0, 75, 0, -20));
+		itemList.add(new Item("Magic Book", 1100, "Weapon", 100, 60, 0, 0));
+		itemList.add(new Item("Crossbow", 1100, "Weapon", 0, 65, 0, -10));
+		itemList.add(new Item("Titanium Armour", 1500, "Armour", 0, 75, 0, -20));
+		itemList.add(new Item("Ability Potion", 1400, "Battle", 0, 0, 0, 0));
+		itemList.add(new Item("Poison", 800, "Battle", 0, 0, 0, 0));
+		itemList.add(new Item("Experience Potion", 2000, "Map", 0, 0, 0, 0));
+		itemList.add(new Item("Excalibur", 2000, "Weapon", 0, 130, 10, 0));
+		itemList.add(new Item("Infinity Ring", 2000, "Weapon", 200, 115, 0, 0));
+		itemList.add(new Item("Sniper rifle", 2000, "Weapon", 0, 150, 0, -10));
+		itemList.add(new Item("Energy Shield", 2000, "Armour", 0, 0, 110, 0));
 	}
 
 	// ================ PLAYER ================
@@ -191,7 +275,21 @@ public class Game {
 	private void giveRandomItem(Player player) {
 		Random r = new Random();
 
-		int itemIndex = r.nextInt(itemList.size());
+		// 10% - very rare, 20% - rare, 30% moderate, 40% common
+		int itemAppear = r.nextInt(100) + 1;
+		int itemIndex = 0;
+		if(itemAppear <= 5 || itemAppear >= 95) {
+			itemIndex = r.nextInt(itemList.size());
+		}
+		else if(itemAppear <= 15 || itemAppear >= 75) {
+			itemIndex = r.nextInt(26);
+		}
+		else if(itemAppear <= 40 || itemAppear >= 60) {
+			itemIndex = r.nextInt(19);
+		}
+		else {
+			itemIndex = r.nextInt(6);
+		}
 		Item item = itemList.get(itemIndex);
 
 		if(player.addItem(item)){
@@ -217,7 +315,7 @@ public class Game {
 		// Shops only sells 3 random items at once
 		List<Item> shopItems = new ArrayList<>();
 		for (int i = 0; i < 3; i++) {
-			shopItems.add(itemList.get(r.nextInt(3)));
+			shopItems.add(itemList.get(r.nextInt(24)+1));
 		}
 
 		// Loop until leave shop
