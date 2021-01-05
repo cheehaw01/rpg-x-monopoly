@@ -44,7 +44,7 @@ public class Game {
 					currentPlayerIndex--; // So that player doesn't lose turn
 					break;
 				case 3:
-					//prevent mispressed quits
+					board.draw();
 					System.out.printf("%nPlayer %d: do you want to quit?%n1.Yes%n2.No%n",
 					 currPlayer.getId());
 					int quit = CommandParser.readInt(new int[]{1, 2});
@@ -88,9 +88,10 @@ public class Game {
 	}
 
 	private void setupItems() {
-		itemList.add(new Item("Sword", 50, 0, 3, 0, 0));
-		itemList.add(new Item("Armor", 50, 0, 0, 3, -1));
-		itemList.add(new Item("Potion", 50, 3, 1, 0, 1));
+		itemList.add(new Item("Sword", 50, 0, 3, 0, 0, false));
+		itemList.add(new Item("Armor", 50, 0, 0, 3, -1, false));
+		itemList.add(new Item("Potion", 50, 20, 1, 0, 1, true));
+		players.get(0).addItem(itemList.get(2));
 	}
 
 	// ================ PLAYER ================

@@ -9,13 +9,20 @@ public class Item {
 	public final int StrengthBonus;
 	public final int DefenseBonus;
 	public final int AgilityBonus;
+	public final boolean IsUsable;
 
-	public Item(String name, int cost, int healBonus, int strengthBonus, int defenseBonus, int agilityBonus) {
+	public Item(
+		String name, int cost, int healBonus, int strengthBonus, int defenseBonus, int agilityBonus, boolean usable) {
 		Cost = cost;
 		Name = name;
 		HealBonus = healBonus;
 		StrengthBonus = strengthBonus;
 		DefenseBonus = defenseBonus;
 		AgilityBonus = agilityBonus;
+		IsUsable = usable;
+	}
+
+	public void use (Player player) {
+		player.Health += HealBonus;
 	}
 }

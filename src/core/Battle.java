@@ -115,8 +115,11 @@ public class Battle {
 						break;
 					case 2:
 						board.draw();
-						System.out.printf("%nNo idea how to do item using. Leave it for later%n");
-						continue;
+
+						if(tryUseItem(player))
+							break;
+						else
+							continue;
 					case 3:
 						board.draw();
 
@@ -137,9 +140,8 @@ public class Battle {
 				// Monsters turn
 				System.out.printf("%nMonsters' turn to attack%n");
 
-				for (int monsterIndex = 0; monsterIndex < monsters.length; monsterIndex++) {
+				for (Monster attackingMonster : monsters) {
 					//each monster attack in turn
-					Monster attackingMonster = monsters[monsterIndex];
 					//player dodge attack probability 0~45%
 					if (Math.random() * 200 > player.Agility) {
 						//dodge failed
@@ -157,7 +159,7 @@ public class Battle {
 					else {
 						//dodged
 						System.out.printf("%n[Player %d](%dHP) dodged Lv%d %s(%dHP)'s attack%n",
-							player.getId(), player.Health, attackingMonster.Level,attackingMonster.Type, attackingMonster.Health);
+							player.getId(), player.Health, attackingMonster.Level, attackingMonster.Type, attackingMonster.Health);
 					}
 				}
 
@@ -192,8 +194,11 @@ public class Battle {
 						break;
 					case 2:
 						board.draw();
-						System.out.printf("%nNo idea how to do item using. Leave it for later%n");
-						break;
+
+						if(tryUseItem(player))
+							break;
+						else
+							continue;
 					case 3:
 						board.draw();
 	
@@ -224,8 +229,11 @@ public class Battle {
 						break;
 					case 2:
 						board.draw();
-						System.out.printf("%nNo idea how to do item using. Leave it for later%n");
-						break;
+
+						if(tryUseItem(player2))
+							break;
+						else
+							continue;
 					case 3:
 						board.draw();
 	
@@ -278,6 +286,37 @@ public class Battle {
 			player.levelUp();
 		}
 	}
-		
+
+	// True if used item, false if didn't use item
+	boolean tryUseItem(Player player) {
+		System.out.printf("%n[Player %d] chose item to use%n", player.getId());
+		System.out.println("1. Back");
+
+		int choiceSize = 1;
+
+		for (int i = 0; i < player.getItems().size(); i++) {
+			Item item = player.getItems().get(i);
+
+			if(item.IsUsable) {
+				System.out.printf("%d. Use %s%n", i + 2, item.Name);
+				choiceSize++;
+			}
+		}
+
+		int[] itemChoices = new int[choiceSize];
+		for (int i = 0; i < itemChoices.length; i++) {
+			itemChoices[i] = i + 1;
+		}
+
+		int itemChoice = CommandParser.readInt(itemChoices);
+		if(itemChoice == 1)
+			return false;
+
+		Item itemToUse = player.getItems().get(itemChoice - 2);
+		itemToUse.use(player);
+
+		System.out.printf("%n[Player %d] used %s%n", player.getId(), itemToUse.Name);
+		return true;
+	}
 }
 
