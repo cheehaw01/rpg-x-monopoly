@@ -89,6 +89,23 @@ public class Battle {
 								player.getId(), player.Health, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
 							//remove monsterToAttack from monsters
 							Monster[] tempArrayMonsters = new Monster[monsters.length - 1];
+							
+							//player gets item
+							int dropId = 0;
+							switch(monsterToAttack.Level) {
+								case 1:
+									dropId = Util.RandomBetween(0, 5);
+								case 2:
+									dropId = Util.RandomBetween(0, 18);
+								case 3:
+									dropId = Util.RandomBetween(0, 25);
+								case 4:
+									dropId = Util.RandomBetween(0, 29);
+							}
+							Item itemDrop = Game.itemList.get(dropId);
+							player.addItem(itemDrop);
+							System.out.printf("%n[Player %d](%dHP) get %s%n",
+								player.getId(), player.Health, itemDrop.Name);
 
 							//player gets gold
 							player.Gold += monsterToAttack.Gold;
@@ -271,6 +288,19 @@ public class Battle {
 		if (playerToAttack.Health <= 0) {
 			System.out.printf("%n[Player %d](%dHP) defeated [Player %d](%dHP)%n",
 				player.getId(), player.Health, playerToAttack.getId(), playerToAttack.Health);
+			
+			//player gets playerToAttack items
+			List<Item> defeatedInventory = playerToAttack.getItems();
+			if (defeatedInventory.size() != 0) {
+				Item defeatedDrop = defeatedInventory.get(Util.RandomBetween(0, defeatedInventory.size()));
+				player.addItem(defeatedDrop);
+				System.out.printf("%n[Player %d](%dHP) get %s from [Player %d](%dHP)%n",
+					player.getId(), player.Health, defeatedDrop.Name, playerToAttack.getId(), playerToAttack.Health);
+			}
+			else {
+				System.out.printf("%n[Player %d](%dHP) does not have item to give [Player %d](%dHP)%n",
+					playerToAttack.getId(), playerToAttack.Health, player.getId(), player.Health);
+			}
 
 			//player gets gold = 50% playerToAttack gold 
 			player.Gold += (playerToAttack.Gold / 2);
