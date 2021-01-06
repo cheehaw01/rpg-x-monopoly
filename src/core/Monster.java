@@ -2,23 +2,19 @@ package core;
 
 import util.Util;
 
-public class Monster {
-	public int Health;
-	public int Strength;
-	public int Defense;
-	public int Agility;
-	public int Exp;
-	public int Gold;
-	public int Level = 1;
-	public String Type;
-	public String[] Types = {"Tanker", "Lunatic", "Trickster", "Fallen Mage"};
-	public int Stats[][][] = {/*Tanker*/{{100, 250, 400, 550}, {10, 20, 30, 40},{50, 60, 70, 80}, {5, 10, 15, 20}},
-							/*Lunatic*/{{50, 100, 150, 200}, {30, 50, 70, 90}, {20, 30, 40, 50}, {5, 20, 35, 50}},
-							/*Trickster*/{{50, 150, 250, 350}, {20, 30, 40, 50}, {30, 40, 50, 60}, {20, 40, 60, 80}},
-							/*Fallen Mage*/{{30, 60, 90, 120},{10, 20, 30, 40},{10, 20, 30, 40},{10, 20, 30, 40}}};
-							/* 				Health				Strength			Defense				Agility
-							By level*/
+public class Monster extends Role {
 	public Monster(Player player) {
+		Level = 1;
+
+		Types = new String[]{"Tanker", "Lunatic", "Trickster", "Fallen Mage"};
+		// Health Strength Defense Agility (By level)
+		Stats = new int[][][]{
+			/*Tanker*/{{100, 250, 400, 550}, {10, 20, 30, 40}, {50, 60, 70, 80}, {5, 10, 15, 20}},
+			/*Lunatic*/{{50, 100, 150, 200}, {30, 50, 70, 90}, {20, 30, 40, 50}, {5, 20, 35, 50}},
+			/*Trickster*/{{50, 150, 250, 350}, {20, 30, 40, 50}, {30, 40, 50, 60}, {20, 40, 60, 80}},
+			/*Fallen Mage*/{{30, 60, 90, 120}, {10, 20, 30, 40}, {10, 20, 30, 40}, {10, 20, 30, 40}}
+		};
+
 		// Generate values and types based on player level.
 		int choiceType = Util.RandomBetween(0, 3);
 		switch (choiceType) {
