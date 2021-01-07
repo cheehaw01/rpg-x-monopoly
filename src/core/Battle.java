@@ -105,7 +105,29 @@ public class Battle {
 							}
 							Item itemDrop = Game.itemList.get(dropId);
 							player.addItem(itemDrop);
-
+							
+							//monster drop item
+							int dropId = 0;
+							int selectDrop = monsterToAttack.Level;
+							switch(selectDrop) {
+								case 1:
+									dropId = Util.RandomBetween(0, 5);
+									break;
+								case 2:
+									dropId = Util.RandomBetween(0, 18);
+									break;
+								case 3:
+									dropId = Util.RandomBetween(0, 25);
+									break;
+								default:
+									dropId = Util.RandomBetween(0, 29);
+									break;
+							}
+							Item itemDrop = Game.itemList.get(dropId);
+							dropped.add(itemDrop);
+							System.out.printf("%nLv%d %s(%dHP) drop item [%s]%n", monsterToAttack.Level, 
+								monsterToAttack.Type, monsterToAttack.Health, itemDrop.Name);
+							
 							//player gets gold
 							player.Gold += monsterToAttack.Gold;
 							System.out.printf("%n[Player %d](%dHP) gained %d Gold%n",
@@ -183,6 +205,74 @@ public class Battle {
 
 			// Toggle turn
 			isPlayerTurn = !isPlayerTurn;
+		}
+		
+		if (player.Health > 0) {
+			// player pick items dropped
+			System.out.printf("%n[Player %d](%dHP) battle end%n", player.getId(), player.Health);
+			while (dropped.size() != 0) {
+				System.out.printf("%n[Player %d](%dHP) Select item pick%n", player.getId(), player.Health);
+				System.out.println("1. Leave");
+
+				// List all dropped items
+				for (int i = 0; i < dropped.size(); i++) {
+					Item itemDropped = dropped.get(i);
+					System.out.printf("%d. %s%n", i + 2, itemDropped.Name);
+				}
+
+				// Dynamically populate choices based on dropped items
+				int[] pickChoices = new int[dropped.size() + 1];
+				for (int i = 0; i < pickChoices.length; i++) {
+					pickChoices[i] = i + 1;
+				}
+
+				int pickChoice = CommandParser.readInt(pickChoices);
+
+				// Leave
+				if (pickChoice == 1) {
+					break;
+				}
+
+				// Pick item
+				int itemIndex = pickChoice - 2;
+				Item itemPicked = dropped.get(itemIndex);
+				if (player.addItem(itemPicked)) {
+					dropped.remove(itemPicked);
+					System.out.printf("%n[Player %s] pick %s%n", player.getId(), itemPicked.Name);
+				}
+				else {
+					System.out.printf("%n[Player %d] inventory full%n", player.getId());
+					System.out.printf("%n[Player %d] Choose item to discard%n", player.getId());
+					System.out.println("1. Back");
+
+					ArrayList<Item> playerItems = player.getItems();
+
+					// List all player items
+					for (int i = 0; i < playerItems.size(); i++) {
+						Item itemToDiscard = playerItems.get(i);
+						System.out.printf("%d. %s%n", i + 2, itemToDiscard.Name);
+					}
+
+					int[] discardChoices = new int[playerItems.size() + 1];
+					for (int i = 0; i < discardChoices.length; i++) {
+						discardChoices[i] = i + 1;
+					}
+
+					int discardChoice = CommandParser.readInt(discardChoices);
+					// Back
+					if (discardChoice == 1) {
+						continue;
+					}
+
+					// Pick item
+					int playeritemIndex = discardChoice - 2;
+					Item discardedItem = playerItems.get(playeritemIndex);
+					player.removeItem(playeritemIndex);
+					System.out.printf("%n[Player %d] discard [%s]%n", player.getId(), discardedItem.Name);
+				}	
+				continue;
+			}
+			System.out.printf("%n[Player %d](%dHP) leave%n", player.getId(), player.Health);
 		}
 
 	}
