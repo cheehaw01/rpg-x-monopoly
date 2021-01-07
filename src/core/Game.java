@@ -31,7 +31,7 @@ public class Game {
 		playerTurn = turnPlayer(playerTurn);
 		System.out.printf("%nRolling for turn...%n");
 		for (Player player : players) {
-			System.out.printf("%n[Player %d] rolled for %d%n", player.getId(), player.getTurn());
+			System.out.printf("%n[Player %d] rolled for %d%n", player.getId(), player.turn);
 		}
 		while (playerTurn.size() > 1) {
 			Player currPlayer = playerTurn.get(currentPlayerIndex);
@@ -133,10 +133,10 @@ public class Game {
 		while (findDuplicate(turnArr)) {
 			// store roll dice into player object turn variable
 			for (int i = 0; i < players.size(); i++)
-				players.get(i).turn(DiceRoller.Roll());
+				players.get(i).turn = DiceRoller.Roll();
 			// array used for checking duplicate
 			for (int i = 0; i < players.size(); i++)
-				turnArr[i] = players.get(i).getTurn();
+				turnArr[i] = players.get(i).turn;
 
 			Collections.sort(players);
 		}

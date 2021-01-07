@@ -39,14 +39,6 @@ public class Player extends Role implements Comparable<Player> {
 		index += steps;
 	}
 
-	public void turn(int turn) {
-		this.turn = turn;
-	}
-
-	public int getTurn() {
-		return turn;
-	}
-
 	public int getIndex() {
 		return index;
 	}
@@ -134,8 +126,8 @@ public class Player extends Role implements Comparable<Player> {
 
 	@Override
 	public int compareTo(Player o) {
-		int compareTurn = ((Player) o).getTurn();
-		return compareTurn - this.getTurn();
+		int compareTurn = ((Player) o).turn;
+		return compareTurn - this.turn;
 	}
 
 }
