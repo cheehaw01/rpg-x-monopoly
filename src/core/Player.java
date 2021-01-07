@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Player extends Role {
 	public int[] expGauges = {50, 150, 300}; //limits of upgrading
 
-	private final int maxCapacity = 4;
+	private final int maxCapacity = 10;
 	private final ArrayList<Item> inventory = new ArrayList<>();
 
 	// STATE
@@ -29,9 +29,9 @@ public class Player extends Role {
 		Types = new String[]{"Normal", "Melee", "Mage", "Archer"};
 		// Health Strength Defense Agility (Levels 1 - 4)
 		Stats = new int[][][]{
-			/*melee*/{{100, 200, 400, 700}, {50, 70, 90, 110}, {50, 60, 70, 80}, {5, 20, 35, 50}},
-			/*mage*/{{100, 200, 400, 700}, {50, 60, 70, 80}, {50, 80, 110, 140}, {5, 15, 25, 35}},
-			/*archer*/{{100, 200, 400, 700}, {50, 80, 110, 140}, {50, 70, 90, 110}, {5, 10, 15, 20}}
+			/*melee*/{{100, 200, 200, 250}, {50, 35, 35, 40}, {50, 20, 20, 25}, {5, 20, 20, 25}},
+			/*mage*/{{100, 200, 200, 250}, {50, 20, 20, 25}, {50, 40, 40, 45}, {5, 15, 15, 20}},
+			/*archer*/{{100, 200, 200, 250}, {50, 50, 50, 55}, {50, 30, 30, 35}, {5, 10, 10, 15}}
 		};
 	}
 
@@ -95,7 +95,7 @@ public class Player extends Role {
 				chooseType();
 			}
 
-			//upgrade stats
+			//check type of player: Melee = 0, Mage = 1, Archer = 2
 			int typeIndex = 0;
 			for (int i = 1; i < Types.length; i++) {
 				if (Type.equals(Types[i])) {
@@ -104,11 +104,11 @@ public class Player extends Role {
 				}
 			}
 
-			Health = Stats[typeIndex][0][Level - 1];
-			//health will recover to full health of next level but it will only happens 3 times throughout the game so whatever
-			Strength = Stats[typeIndex][1][Level - 1];
-			Defense = Stats[typeIndex][2][Level - 1];
-			Agility = Stats[typeIndex][3][Level - 1];
+			//increment stats to avoid overwritting item attributes
+			Health += Stats[typeIndex][0][Level - 1];
+			Strength += Stats[typeIndex][1][Level - 1];
+			Defense += Stats[typeIndex][2][Level - 1];
+			Agility += Stats[typeIndex][3][Level - 1];
 		}
 
 	}
