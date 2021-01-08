@@ -330,7 +330,7 @@ public class Game {
 					// List all player items
 					for (int i = 0; i < playerItems.size(); i++) {
 						Item itemToSell = playerItems.get(i);
-						System.out.printf("%d. Sell %s (%dG)%n", i + 2, itemToSell.Name, (itemToSell.Cost/2));
+						System.out.printf("%d. Sell %s (%dG)%n", i + 2, itemToSell.Name, itemToSell.Cost);
 					}
 
 					// Dynamically populate choices based on player items
@@ -352,9 +352,9 @@ public class Game {
 					int itemIndex = sellChoice - 2;
 					Item itemSold = playerItems.get(itemIndex);
 
-					player.Gold += (itemSold.Cost/2);  //item sold get 1/2 of original gold
-					System.out.printf("%n[Player %s] sold %s for %dG%n",
-						player.getId(), itemSold.Name, (itemSold.Cost/2));
+					player.Gold += (itemSold.Cost * 0.5); // item sold get 1/2 of original gold
+					System.out.printf("%n[Player %s] sold %s for %dG%n", player.getId(), itemSold.Name,
+							(itemSold.Cost * 0.5));
 
 					player.removeItem(itemIndex);
 
