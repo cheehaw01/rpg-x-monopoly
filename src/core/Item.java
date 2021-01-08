@@ -22,7 +22,7 @@ public class Item {
 		IsUsable = usable;
 	}
 
-	public void use (Player player) {
+	public void use(Player player) {
 		player.Health += HealBonus;
 	}
 }

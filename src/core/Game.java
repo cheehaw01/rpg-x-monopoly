@@ -2,18 +2,19 @@ package core;
 
 import util.Util;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class Game {
-	Board board;
+	private final Board board;
 
-	List<Player> players;
-	int currentPlayerIndex;
-	List<Player> playerTurn;
-	static List<Item> itemList;
+	private List<Player> players;
+	private int currentPlayerIndex;
+	private final List<Player> playerTurn;
+
+	public static List<Item> itemList;
 
 	public Game() {
 		board = new Board();
@@ -21,14 +22,14 @@ public class Game {
 
 		initPlayers();
 		setupItems();
+
+		playerTurn = new ArrayList<>(players);
 	}
 
 	public void run() {
 		board.draw();
 
-		playerTurn = new ArrayList<Player>(players);
-
-		playerTurn = turnPlayer(playerTurn);
+		turnPlayer(playerTurn);
 		System.out.printf("%nRolling for turn...%n");
 		for (Player player : players) {
 			System.out.printf("%n[Player %d] rolled for %d%n", player.getId(), player.turn);
@@ -41,7 +42,7 @@ public class Game {
 			System.out.println("2. Check stats");
 			System.out.println("3. Quit");
 
-			int choice = CommandParser.readInt(new int[] { 1, 2, 3 });
+			int choice = CommandParser.readInt(new int[]{1, 2, 3});
 
 			switch (choice) {
 				case 1:
@@ -54,10 +55,11 @@ public class Game {
 				case 3:
 					board.draw();
 					System.out.printf("%nPlayer %d: do you want to quit?%n1.Yes%n2.No%n", currPlayer.getId());
-					int quit = CommandParser.readInt(new int[] { 1, 2 });
+					int quit = CommandParser.readInt(new int[]{1, 2});
 					if (quit == 1) {
 						removePlayer(currPlayer);
-					} else {
+					}
+					else {
 						currentPlayerIndex--; // return to menu
 					}
 					break;
@@ -83,7 +85,7 @@ public class Game {
 
 	private void initPlayers() {
 		System.out.println("Enter player amount:");
-		int initialPlayerCount = CommandParser.readInt(new int[] { 2, 3, 4 });
+		int initialPlayerCount = CommandParser.readInt(new int[]{2, 3, 4});
 
 		players = new ArrayList<>();
 
@@ -95,7 +97,7 @@ public class Game {
 
 	private void setupItems() {
 		itemList.add(new Item("Junk", 0, 0, 0, 0, 0, true));
-		itemList.add(new Item("Smokebomb", 400, 0, 0, 0, 0, true));
+		itemList.add(new Item("Smoke Bomb", 400, 0, 0, 0, 0, true));
 		itemList.add(new Item("Basic Sword", 200, 0, 10, 0, 0, false));
 		itemList.add(new Item("Basic Wand", 200, 0, 10, 0, 0, false));
 		itemList.add(new Item("Basic Bow", 200, 0, 10, 0, 0, false));
@@ -125,10 +127,10 @@ public class Game {
 		itemList.add(new Item("Sniper rifle", 2000, 0, 150, 0, -10, false));
 		itemList.add(new Item("Energy Shield", 2000, 0, 0, 110, 0, false));
 
-		players.get(0).addItem(itemList.get(2));
+		players.get(0).addItem(itemList.get(1));
 	}
 
-	private List<Player> turnPlayer(List<Player> players) {
+	private void turnPlayer(List<Player> players) {
 		int[] turnArr = new int[players.size()];
 		while (findDuplicate(turnArr)) {
 			// store roll dice into player object turn variable
@@ -140,7 +142,6 @@ public class Game {
 
 			Collections.sort(players);
 		}
-		return players;
 	}
 
 	private boolean findDuplicate(int[] arr) {
@@ -176,7 +177,8 @@ public class Game {
 			case SIN_M:
 				if (sameTilePlayers(player) == null) {
 					new Battle(player, 1).start(board);
-				} else {
+				}
+				else {
 					new Battle(player, sameTilePlayers(player)).PKStart(board);
 				}
 
@@ -184,14 +186,16 @@ public class Game {
 			case DUO_M:
 				if (sameTilePlayers(player) == null) {
 					new Battle(player, 2).start(board);
-				} else {
+				}
+				else {
 					new Battle(player, sameTilePlayers(player)).PKStart(board);
 				}
 				break;
 			case TRI_M:
 				if (sameTilePlayers(player) == null) {
 					new Battle(player, 3).start(board);
-				} else {
+				}
+				else {
 					new Battle(player, sameTilePlayers(player)).PKStart(board);
 				}
 				break;
@@ -215,7 +219,7 @@ public class Game {
 		board.draw();
 		System.out.printf("%n[Player %d] stats%n", player.getId());
 
-		System.out.printf("Type: %s%n", player.Type);
+		System.out.printf("%nType: %s%n", player.Type);
 		System.out.printf("Level: %d%n", player.Level);
 		System.out.printf("Exp: %d%n", player.Exp);
 		System.out.printf("Health: %d%n", player.Health);
@@ -223,6 +227,13 @@ public class Game {
 		System.out.printf("Defense: %d%n", player.Defense);
 		System.out.printf("Agility: %d%n", player.Agility);
 		System.out.printf("Gold: %d%n", player.Gold);
+
+		// Show items
+		System.out.printf("%nInventory: [ ");
+		for (Item item : player.getItems()) {
+			System.out.printf("%s, ", item.Name);
+		}
+		System.out.printf("]%n");
 	}
 
 	private Player sameTilePlayers(Player player) {
@@ -250,18 +261,22 @@ public class Game {
 		int itemIndex = 0;
 		if (itemAppear <= 5 || itemAppear >= 95) {
 			itemIndex = r.nextInt(itemList.size());
-		} else if (itemAppear <= 15 || itemAppear >= 75) {
+		}
+		else if (itemAppear <= 15 || itemAppear >= 75) {
 			itemIndex = r.nextInt(26);
-		} else if (itemAppear <= 40 || itemAppear >= 60) {
+		}
+		else if (itemAppear <= 40 || itemAppear >= 60) {
 			itemIndex = r.nextInt(19);
-		} else {
+		}
+		else {
 			itemIndex = r.nextInt(6);
 		}
 		Item item = itemList.get(itemIndex);
 
 		if (player.addItem(item)) {
 			System.out.printf("%n[Player %d] gets %s from chest%n", player.getId(), item.Name);
-		} else {
+		}
+		else {
 			// Not enough space in inventory
 			System.out.printf("%n[Player %d] Not enough space in inventory%n", player.getId());
 		}
@@ -273,7 +288,7 @@ public class Game {
 		System.out.println("2. Buy item");
 		System.out.println("3. Sell item");
 
-		int choice = CommandParser.readInt(new int[] { 1, 2, 3 });
+		int choice = CommandParser.readInt(new int[]{1, 2, 3});
 
 		Random r = new Random();
 
@@ -294,7 +309,7 @@ public class Game {
 					System.out.printf("3. %s (%dG)%n", shopItems.get(1).Name, shopItems.get(1).Cost);
 					System.out.printf("4. %s (%dG)%n", shopItems.get(2).Name, shopItems.get(2).Cost);
 
-					int buyChoice = CommandParser.readInt(new int[] { 1, 2, 3, 4 });
+					int buyChoice = CommandParser.readInt(new int[]{1, 2, 3, 4});
 
 					board.draw();
 
@@ -310,12 +325,14 @@ public class Game {
 							player.Gold -= itemToBuy.Cost;
 
 							System.out.printf("%n[Player %d] bought %s for %dG. Remaining gold is %dG.%n",
-									player.getId(), itemToBuy.Name, itemToBuy.Cost, player.Gold);
-						} else {
+								player.getId(), itemToBuy.Name, itemToBuy.Cost, player.Gold);
+						}
+						else {
 							// Not enough space in inventory
 							System.out.printf("%n[Player %d] Not enough space in inventory%n", player.getId());
 						}
-					} else {
+					}
+					else {
 						System.out.printf("[Player %d] gold is not enough%n", player.getId());
 					}
 
@@ -354,7 +371,7 @@ public class Game {
 
 					player.Gold += (itemSold.Cost * 0.5); // item sold get 1/2 of original gold
 					System.out.printf("%n[Player %s] sold %s for %dG%n", player.getId(), itemSold.Name,
-							(itemSold.Cost * 0.5));
+						(itemSold.Cost * 0.5));
 
 					player.removeItem(itemIndex);
 
@@ -366,7 +383,7 @@ public class Game {
 			System.out.println("2. Buy item");
 			System.out.println("3. Sell item");
 
-			choice = CommandParser.readInt(new int[] { 1, 2, 3 });
+			choice = CommandParser.readInt(new int[]{1, 2, 3});
 		}
 
 		board.draw();

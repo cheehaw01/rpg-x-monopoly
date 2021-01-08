@@ -1,5 +1,9 @@
 package core;
 
+import util.Util;
+
+import java.util.List;
+
 public class Battle {
 	//instance variables for PvM
 	Player player;
@@ -10,8 +14,6 @@ public class Battle {
 
 	boolean isPlayerTurn = true;
 
-	
-
 	public Battle(Player player, int monsterCount) {
 		this.player = player;
 		monsters = new Monster[monsterCount];
@@ -21,7 +23,7 @@ public class Battle {
 		}
 	}
 
-	public Battle(Player player1, Player player2){
+	public Battle(Player player1, Player player2) {
 		this.player1 = player1;
 		this.player2 = player2;
 	}
@@ -89,27 +91,35 @@ public class Battle {
 								player.getId(), player.Health, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
 							//remove monsterToAttack from monsters
 							Monster[] tempArrayMonsters = new Monster[monsters.length - 1];
-							
+
 							//player gets item
 							int dropId = 0;
 							int selectDrop = monsterToAttack.Level;
-							switch(selectDrop) {
+							switch (selectDrop) {
 								case 1:
 									dropId = Util.RandomBetween(0, 5);
+									break;
 								case 2:
 									dropId = Util.RandomBetween(0, 18);
+									break;
 								case 3:
 									dropId = Util.RandomBetween(0, 25);
+									break;
 								case 4:
 									dropId = Util.RandomBetween(0, 29);
+									break;
 							}
 							Item itemDrop = Game.itemList.get(dropId);
+
+							//player gets item drop
 							player.addItem(itemDrop);
+							System.out.printf("%n[Player %d](%dHP) got %s from drop%n",
+								player.getId(), player.Health, itemDrop.Name);
 
 							//player gets gold
 							player.Gold += monsterToAttack.Gold;
 							System.out.printf("%n[Player %d](%dHP) gained %d Gold%n",
-							player.getId(), player.Health, monsterToAttack.Gold);
+								player.getId(), player.Health, monsterToAttack.Gold);
 
 							//player gains exp
 							player.Exp += monsterToAttack.Exp;
@@ -132,10 +142,14 @@ public class Battle {
 					case 2:
 						board.draw();
 
-						if(tryUseItem(player))
+						int res = tryUseItem(player);
+
+						if (res == 0)
+							continue;
+						else if (res == 1)
 							break;
 						else
-							continue;
+							return;
 					case 3:
 						board.draw();
 
@@ -189,35 +203,39 @@ public class Battle {
 
 	public void PKStart(Board board) {
 		System.out.printf("%n[Player %d](%dHP) will fight [Player %d](%dHP)%n",
-		player1.getId(), player1.Health, player2.getId(), player2.Health);
+			player1.getId(), player1.Health, player2.getId(), player2.Health);
 
 		while ((player1.Health > 0 && player2.Health > 0)) {
-			if (isPlayerTurn){
+			if (isPlayerTurn) {
 				System.out.printf("%n[Player %d](%dHP) is in battle%n", player1.getId(), player1.Health);
 				System.out.printf("1. Attack [Player %d](%dHP)%n", player2.getId(), player2.Health);
 				System.out.println("2. Use Item");
 				System.out.printf("3. Flee(%d%c)%n", player1.Agility, '%');
-	
+
 				int choice = CommandParser.readInt(new int[]{1, 2, 3});
-	
+
 				switch (choice) {
 					case 1:
 						board.draw();
 						attackPlayer(player1, player2);
-						if (player2.Health <= 0){
+						if (player2.Health <= 0) {
 							return;//end battle already
 						}
 						break;
 					case 2:
 						board.draw();
 
-						if(tryUseItem(player))
+						int res = tryUseItem(player1);
+
+						if (res == 0)
+							continue;
+						else if (res == 1)
 							break;
 						else
-							continue;
+							return;
 					case 3:
 						board.draw();
-	
+
 						if (Math.random() * 100 < player1.Agility) {
 							System.out.printf("%n[Player %d] fled the battle%n",
 								player1.getId());
@@ -227,17 +245,17 @@ public class Battle {
 							System.out.printf("%n[Player %d] flee unsuccessful%n",
 								player1.getId());
 						}
-						break;	
+						break;
 				}
 			}
-			else{
+			else {
 				System.out.printf("%n[Player %d](%dHP) is in battle%n", player2.getId(), player2.Health);
 				System.out.printf("1. Attack [Player %d](%dHP)%n", player1.getId(), player1.Health);
 				System.out.println("2. Use Item");
 				System.out.printf("3. Flee(%d%c)%n", player2.Agility, '%');
-	
+
 				int choice = CommandParser.readInt(new int[]{1, 2, 3});
-	
+
 				switch (choice) {
 					case 1:
 						board.draw();
@@ -246,13 +264,17 @@ public class Battle {
 					case 2:
 						board.draw();
 
-						if(tryUseItem(player2))
+						int res = tryUseItem(player2);
+
+						if (res == 0)
+							continue;
+						else if (res == 1)
 							break;
 						else
-							continue;
+							return;
 					case 3:
 						board.draw();
-	
+
 						if (Math.random() * 100 < player2.Agility) {
 							System.out.printf("%n[Player %d] fled the battle%n",
 								player2.getId());
@@ -263,13 +285,13 @@ public class Battle {
 								player2.getId());
 						}
 						break;
-					}	
+				}
 			}
 			isPlayerTurn = !isPlayerTurn;
-		}	
+		}
 	}
 
-	public void attackPlayer(Player player, Player playerToAttack){				
+	public void attackPlayer(Player player, Player playerToAttack) {
 		if (Math.random() * player.Agility > Math.random() * playerToAttack.Agility) {
 
 			int damage = player.Strength * 100 / (100 + playerToAttack.Defense);
@@ -287,7 +309,7 @@ public class Battle {
 		if (playerToAttack.Health <= 0) {
 			System.out.printf("%n[Player %d](%dHP) defeated [Player %d](%dHP)%n",
 				player.getId(), player.Health, playerToAttack.getId(), playerToAttack.Health);
-			
+
 			//player gets playerToAttack items
 			List<Item> defeatedInventory = playerToAttack.getItems();
 			if (defeatedInventory.size() != 0) {
@@ -304,7 +326,7 @@ public class Battle {
 			//player gets gold = 50% playerToAttack gold 
 			player.Gold += (playerToAttack.Gold / 2);
 			System.out.printf("%n[Player %d](%dHP) gained %d Gold%n",
-			player.getId(), player.Health, (playerToAttack.Gold / 2));
+				player.getId(), player.Health, (playerToAttack.Gold / 2));
 
 			//player gains exp = 50% playerToAttack exp
 			player.Exp += playerToAttack.Exp / 2;
@@ -316,8 +338,8 @@ public class Battle {
 		}
 	}
 
-	// True if used item, false if didn't use item
-	boolean tryUseItem(Player player) {
+	// 0 if didn't use item, 1 if used item, 2 if used smoke bomb
+	int tryUseItem(Player player) {
 		System.out.printf("%n[Player %d] chose item to use%n", player.getId());
 		System.out.println("1. Back");
 
@@ -326,8 +348,8 @@ public class Battle {
 		for (int i = 0; i < player.getItems().size(); i++) {
 			Item item = player.getItems().get(i);
 
-			if(item.IsUsable) {
-				System.out.printf("%d. Use %s%n", i + 2, item.Name);
+			if (item.IsUsable) {
+				System.out.printf("%d. Use %s%n", choiceSize + 1, item.Name);
 				choiceSize++;
 			}
 		}
@@ -338,14 +360,36 @@ public class Battle {
 		}
 
 		int itemChoice = CommandParser.readInt(itemChoices);
-		if(itemChoice == 1)
-			return false;
+		if (itemChoice == 1)
+			return 0;
 
-		Item itemToUse = player.getItems().get(itemChoice - 2);
+		int itemIndex = itemChoice - 2;
+
+		Item itemToUse = null;
+
+		for (int i = 0, c = 0; i < player.getItems().size(); i++) {
+			Item item = player.getItems().get(i);
+
+			if(item.IsUsable) {
+				if(itemIndex == c) {
+					itemToUse = item;
+					player.removeItem(i);
+				}
+
+				c++;
+			}
+		}
+
 		itemToUse.use(player);
 
-		System.out.printf("%n[Player %d] used %s%n", player.getId(), itemToUse.Name);
-		return true;
+		if(itemToUse.Name.equals("Smoke Bomb")) {
+			System.out.printf("%n[Player %d] escaped the battle%n", player.getId());
+			return 2;
+		}
+		else {
+			System.out.printf("%n[Player %d] used %s%n", player.getId(), itemToUse.Name);
+			return 1;
+		}
 	}
 }
 

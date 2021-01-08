@@ -3,9 +3,9 @@ package util;
 import java.util.Random;
 
 public class Util {
-	public static boolean intArrayContains(int[] arr, int v){
+	public static boolean intArrayContains(int[] arr, int v) {
 		for (int i : arr) {
-			if(v == i)
+			if (v == i)
 				return true;
 		}
 

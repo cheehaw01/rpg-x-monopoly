@@ -21,7 +21,7 @@ public class Monster extends Role {
 			case 0:
 				Type = "Tanker";
 				break;
-			
+
 			case 1:
 				Type = "Lunatic";
 				break;
@@ -34,14 +34,14 @@ public class Monster extends Role {
 				break;
 		}
 
-		if (Util.RandomBetween(1, 20) == 1){
+		if (Util.RandomBetween(1, 20) == 1) {
 			Level = player.Level + 1;
 		}
-		else if (Util.RandomBetween(1, 10) == 1){
+		else if (Util.RandomBetween(1, 10) == 1) {
 			Level = player.Level - 1;
 		}
-		else{
-			Level = player.Level;	
+		else {
+			Level = player.Level;
 		}
 		Level = Math.max(1, Math.min(Level, 4));
 
@@ -55,43 +55,43 @@ public class Monster extends Role {
 	}
 
 	public void useAbility(Player player) {
-		if (Type.equals("Tanker")){
-			if (Util.RandomBetween(1, 10) == 1){//10% chance
+		if (Type.equals("Tanker")) {
+			if (Util.RandomBetween(1, 10) == 1) {//10% chance
 				System.out.printf("Lv%d %s(%dHP) used ability: Giant's Wrath%n", Level, Type, Health);
 				//does 10*Lv% true damage to self and same value true damage to player
-				int damageToSelf = (int)(Health * 0.1 * Level);
+				int damageToSelf = (int) (Health * 0.1 * Level);
 				System.out.printf("Lv%d %s(%dHP) inflicted %dHP damage to self%n", Level, Type, Health, damageToSelf);
 				Health -= Math.min(Health, damageToSelf);
 				player.Health -= Math.min(player.Health, damageToSelf);
-				System.out.printf("Lv%d %s(%dHP) inflicted %dHP damage on [Player %d](%dHP)%n", 
-				Level, Type, Health, damageToSelf, player.getId(), player.Health);
+				System.out.printf("Lv%d %s(%dHP) inflicted %dHP damage on [Player %d](%dHP)%n",
+					Level, Type, Health, damageToSelf, player.getId(), player.Health);
 			}
 		}
-		else if (Type.equals("Trickster")){
-			if (Util.RandomBetween(1, 10) == 1){//10%chance
+		else if (Type.equals("Trickster")) {
+			if (Util.RandomBetween(1, 10) == 1) {//10%chance
 				//causes player to self harm a 
 				System.out.printf("Lv%d %s(%dHP) used ability: Confusion%n", Level, Type, Health);
 				int damageToPlayer = player.Strength * 50 / (100 + player.Defense);
 				player.Health -= Math.min(player.Health, damageToPlayer);
 				System.out.printf("[Player %d](%dHP) inflicted %dHP damage to self%n",
-				 player.getId(), player.Health, damageToPlayer);
+					player.getId(), player.Health, damageToPlayer);
 			}
 		}
-		else if (Type.equals("Lunatic")){
-			if (Util.RandomBetween(1, 10) == 1){//10%chance
+		else if (Type.equals("Lunatic")) {
+			if (Util.RandomBetween(1, 10) == 1) {//10%chance
 				//critical hit = normal hit * 1.5
 				System.out.printf("Lv%d %s(%dHP) used ability: Critical Hit%n", Level, Type, Health);
 				int damageToPlayer = Strength * 150 / (100 + player.Defense);
 				player.Health -= Math.min(player.Health, damageToPlayer);
 				System.out.printf("Lv%d %s(%dHP) inflicted %dHP damage on [Player %d](%dHP)%n",
-				Level, Type, Health, damageToPlayer, player.getId(), player.Health);
+					Level, Type, Health, damageToPlayer, player.getId(), player.Health);
 			}
 		}
-		else if (Type.equals("Fallen Mage")){
-			if (Util.RandomBetween(1, 10) > 3){//70%chance{				
+		else if (Type.equals("Fallen Mage")) {
+			if (Util.RandomBetween(1, 10) > 3) {//70%chance{
 				//regens 10*Lv% current health
 				System.out.printf("Lv%d %s(%dHP) used ability: Regeneration%n", Level, Type, Health);
-				int regen = (int)(Health * 0.1 * Level);
+				int regen = (int) (Health * 0.1 * Level);
 				Health += regen;
 				System.out.printf("Lv%d %s(%dHP) recovered %dHP%n", Level, Type, Health, regen);
 			}
