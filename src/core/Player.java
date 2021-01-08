@@ -3,8 +3,8 @@ package core;
 import java.util.ArrayList;
 
 // Container for stats and state
-public class Player extends Role {
-	public int[] expGauges = {50, 150, 300}; //limits of upgrading
+public class Player extends Role implements Comparable<Player> {
+	public int[] expGauges = { 50, 150, 300 }; // limits of upgrading
 
 	private final int maxCapacity = 10;
 	private final ArrayList<Item> inventory = new ArrayList<>();
@@ -12,6 +12,7 @@ public class Player extends Role {
 	// STATE
 	private int index = 0; // Counts from 0 - 31
 	private final int id;
+	public int turn;
 
 	public Player(int id) {
 		this.id = id;
@@ -26,13 +27,12 @@ public class Player extends Role {
 		Exp = 0;
 
 		Type = "Normal";
-		Types = new String[]{"Normal", "Melee", "Mage", "Archer"};
+		Types = new String[] { "Normal", "Melee", "Mage", "Archer" };
 		// Health Strength Defense Agility (Levels 1 - 4)
-		Stats = new int[][][]{
-			/*melee*/{{100, 200, 200, 250}, {50, 35, 35, 40}, {50, 20, 20, 25}, {5, 20, 20, 25}},
-			/*mage*/{{100, 200, 200, 250}, {50, 20, 20, 25}, {50, 40, 40, 45}, {5, 15, 15, 20}},
-			/*archer*/{{100, 200, 200, 250}, {50, 50, 50, 55}, {50, 30, 30, 35}, {5, 10, 10, 15}}
-		};
+		Stats = new int[][][] {
+				/* melee */{ { 100, 200, 200, 250 }, { 50, 35, 35, 40 }, { 50, 20, 20, 25 }, { 5, 20, 20, 25 } },
+				/* mage */{ { 100, 200, 200, 250 }, { 50, 20, 20, 25 }, { 50, 40, 40, 45 }, { 5, 15, 15, 20 } },
+				/* archer */{ { 100, 200, 200, 250 }, { 50, 50, 50, 55 }, { 50, 30, 30, 35 }, { 5, 10, 10, 15 } } };
 	}
 
 	public void move(int steps) {
@@ -74,28 +74,28 @@ public class Player extends Role {
 
 	public void levelUp() {
 		if (Exp < 50 || Exp > 500) {
-			//dont waste runtime here
+			// dont waste runtime here
 			return;
 		}
 
 		boolean upgraded = false;
 		for (int i = 0; i < expGauges.length; i++) {
 			if (i == Level - 1 && Exp >= expGauges[Level - 1]) {
-				//just passel level gauge for the first time this level
+				// just passel level gauge for the first time this level
 				Level++;
 				System.out.printf("%n[Player %d] upgraded to Level %d%n", getId(), Level);
 				upgraded = true;
-				break;//no need to continue looping
+				break;// no need to continue looping
 			}
 		}
 
 		if (upgraded) {
 			if (Level == 2) {
-				//for now allow choose type at level 2 only
+				// for now allow choose type at level 2 only
 				chooseType();
 			}
 
-			//check type of player: Melee = 0, Mage = 1, Archer = 2
+			// check type of player: Melee = 0, Mage = 1, Archer = 2
 			int typeIndex = 0;
 			for (int i = 1; i < Types.length; i++) {
 				if (Type.equals(Types[i])) {
@@ -104,7 +104,7 @@ public class Player extends Role {
 				}
 			}
 
-			//increment stats to avoid overwritting item attributes
+			// increment stats to avoid overwritting item attributes
 			Health += Stats[typeIndex][0][Level - 1];
 			Strength += Stats[typeIndex][1][Level - 1];
 			Defense += Stats[typeIndex][2][Level - 1];
@@ -119,10 +119,15 @@ public class Player extends Role {
 			System.out.printf("%d. %s\n", i, Types[i]);
 		}
 
-		int choiceType = CommandParser.readInt(new int[]{1, 2, 3});
+		int choiceType = CommandParser.readInt(new int[] { 1, 2, 3 });
 		Type = Types[choiceType];
 		System.out.printf("[Player %d] is now type %s\n", getId(), Type);
 	}
 
+	@Override
+	public int compareTo(Player o) {
+		int compareTurn = ((Player) o).turn;
+		return compareTurn - this.turn;
+	}
 
 }
