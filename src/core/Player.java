@@ -1,6 +1,7 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 // Container for stats and state
 public class Player extends Role implements Comparable<Player> {
@@ -122,6 +123,18 @@ public class Player extends Role implements Comparable<Player> {
 		int choiceType = CommandParser.readInt(new int[]{1, 2, 3});
 		Type = Types[choiceType];
 		System.out.printf("[Player %d] is now type %s\n", getId(), Type);
+	}
+
+	@Override
+	public String toString() {
+		return "Player{" +
+			"expGauges=" + Arrays.toString(expGauges) +
+			", maxCapacity=" + maxCapacity +
+			", inventory=" + inventory +
+			", index=" + index +
+			", id=" + id +
+			", turn=" + turn +
+			'}';
 	}
 
 	@Override

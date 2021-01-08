@@ -370,8 +370,8 @@ public class Battle {
 		for (int i = 0, c = 0; i < player.getItems().size(); i++) {
 			Item item = player.getItems().get(i);
 
-			if(item.IsUsable) {
-				if(itemIndex == c) {
+			if (item.IsUsable) {
+				if (itemIndex == c) {
 					itemToUse = item;
 					player.removeItem(i);
 				}
@@ -382,7 +382,7 @@ public class Battle {
 
 		itemToUse.use(player);
 
-		if(itemToUse.Name.equals("Smoke Bomb")) {
+		if (itemToUse.Name.equals("Smoke Bomb")) {
 			System.out.printf("%n[Player %d] escaped the battle%n", player.getId());
 			return 2;
 		}

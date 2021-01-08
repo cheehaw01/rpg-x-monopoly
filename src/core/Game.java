@@ -2,40 +2,36 @@ package core;
 
 import util.Util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Game {
 	private final Board board;
 
 	private List<Player> players;
+	private List<Player> removedPlayers;
 	private int currentPlayerIndex;
-	private final List<Player> playerTurn;
 
 	public static List<Item> itemList;
 
 	public Game() {
 		board = new Board();
 		itemList = new ArrayList<>();
+		removedPlayers = new ArrayList<>();
 
 		initPlayers();
 		setupItems();
-
-		playerTurn = new ArrayList<>(players);
 	}
 
 	public void run() {
 		board.draw();
 
-		turnPlayer(playerTurn);
+		turnPlayer(players);
 		System.out.printf("%nRolling for turn...%n");
 		for (Player player : players) {
 			System.out.printf("%n[Player %d] rolled for %d%n", player.getId(), player.turn);
 		}
-		while (playerTurn.size() > 1) {
-			Player currPlayer = playerTurn.get(currentPlayerIndex);
+		while (players.size() > 1) {
+			Player currPlayer = players.get(currentPlayerIndex);
 
 			System.out.printf("%n[Player %d] turn%n", currPlayer.getId());
 			System.out.println("1. Roll dice");
@@ -67,7 +63,7 @@ public class Game {
 					break;
 			}
 
-			for (Player player : playerTurn) {
+			for (Player player : players) {
 				if (player.Health <= 0) {
 					removePlayer(player);
 					break;
@@ -78,7 +74,27 @@ public class Game {
 			currentPlayerIndex = Util.wrapAroundClamp(currentPlayerIndex, 0, players.size());
 		}
 
-		System.out.printf("%n[Player %s] WON! %n", playerTurn.get(0).getId());
+		// Add last remaining player
+		removedPlayers.add(players.get(0));
+
+		// Sort players by level then by gold
+		removedPlayers.sort(
+			Comparator.comparingInt((Player p) -> p.Level)
+				.thenComparingInt(p -> p.Gold));
+
+		// Game end leaderboard
+		board.draw();
+		System.out.printf("%n=======================%n");
+		System.out.print("Game end");
+		System.out.printf("%n=======================%n");
+
+		System.out.printf("%nLeaderboard%n");
+		for (int i = removedPlayers.size() - 1; i >= 0; i--) {
+			Player player = removedPlayers.get(i);
+
+			System.out.printf("[Player %d](LV%d) %d GOLD%n",
+				player.getId(), player.Level, player.Gold);
+		}
 	}
 
 	// ================ SETUP ================
@@ -126,8 +142,6 @@ public class Game {
 		itemList.add(new Item("Infinity Ring", 2000, 200, 115, 0, 0, false));
 		itemList.add(new Item("Sniper rifle", 2000, 0, 150, 0, -10, false));
 		itemList.add(new Item("Energy Shield", 2000, 0, 0, 110, 0, false));
-
-		players.get(0).addItem(itemList.get(1));
 	}
 
 	private void turnPlayer(List<Player> players) {
@@ -209,9 +223,10 @@ public class Game {
 	}
 
 	private void removePlayer(Player player) {
-		playerTurn.remove(player);
+		players.remove(player);
+		removedPlayers.add(player);
 
-		System.out.printf("%n[Player %d] quit the game%n", player.getId());
+		System.out.printf("%n[Player %d] is out of the game%n", player.getId());
 		currentPlayerIndex--;
 	}
 
@@ -241,8 +256,8 @@ public class Game {
 		int sameTilePlayers = 0;
 		Player playerToBattle = null;
 		for (int i = 0; i < players.size(); i++) {
-			if (player.getId() != playerTurn.get(i).getId() && player.getIndex() == playerTurn.get(i).getIndex()) {
-				playerToBattle = playerTurn.get(i);
+			if (player.getId() != players.get(i).getId() && player.getIndex() == players.get(i).getIndex()) {
+				playerToBattle = players.get(i);
 				sameTilePlayers++;
 			}
 		}
