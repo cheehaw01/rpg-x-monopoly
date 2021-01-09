@@ -8,6 +8,7 @@ public abstract class Role {
 	public int Agility;
 	public int Gold;
 	public int Exp;
+	public int maxLevel;
 
 	public String Type;
 	public String[] Types;
