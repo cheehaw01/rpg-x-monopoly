@@ -1,13 +1,12 @@
 package core;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 // Container for stats and state
 public class Player extends Role implements Comparable<Player> {
-	public int[] expGauges = {50, 150, 300}; // limits of upgrading
+	public int[] expGauges = {50, 150, 300, 500}; // limits of upgrading
 
-	private final int maxCapacity = 4;
+	private final int maxCapacity = 10;
 	private final ArrayList<Item> inventory = new ArrayList<>();
 
 	// STATE
@@ -27,14 +26,15 @@ public class Player extends Role implements Comparable<Player> {
 		Gold = 200;
 		Exp = 0;
 		Effect = "";
+		maxLevel = 5;
 
 		Type = "Normal";
 		Types = new String[]{"Normal", "Melee", "Mage", "Archer"};
-		// Health Strength Defense Agility (Levels 1 - 4)
+		// Health Strength Defense Agility (Levels 1 - 5)
 		Stats = new int[][][]{
-			/* melee */{{100, 200, 200, 250}, {50, 35, 35, 40}, {50, 20, 20, 25}, {5, 20, 20, 25}},
-			/* mage */{{100, 200, 200, 250}, {50, 20, 20, 25}, {50, 40, 40, 45}, {5, 15, 15, 20}},
-			/* archer */{{100, 200, 200, 250}, {50, 50, 50, 55}, {50, 30, 30, 35}, {5, 10, 10, 15}}};
+			/* melee */{{100, 200, 200, 200, 300}, {50, 35, 35, 35, 40}, {50, 20, 20, 20, 25}, {5, 20, 20, 20, 25}},
+			/* mage */{{100, 200, 200, 200, 300}, {50, 20, 20, 20, 25}, {50, 40, 40, 40, 45}, {5, 10, 10, 10, 15}},
+			/* archer */{{100, 200, 200, 200, 300}, {50, 50, 50, 50, 55}, {50, 30, 30, 30, 35}, {5, 5, 5, 5, 10}}};
 	}
 
 	public void move(int steps) {
@@ -75,7 +75,7 @@ public class Player extends Role implements Comparable<Player> {
 	}
 
 	public void levelUp() {
-		if (Exp < 50 || Exp > 500) {
+		if (Exp < 50 || Level >= 5) {
 			// dont waste runtime here
 			return;
 		}
@@ -127,21 +127,22 @@ public class Player extends Role implements Comparable<Player> {
 	}
 
 	@Override
-	public String toString() {
-		return "Player{" +
-			"expGauges=" + Arrays.toString(expGauges) +
-			", maxCapacity=" + maxCapacity +
-			", inventory=" + inventory +
-			", index=" + index +
-			", id=" + id +
-			", turn=" + turn +
-			'}';
-	}
-
-	@Override
 	public int compareTo(Player o) {
 		int compareTurn = ((Player) o).turn;
 		return compareTurn - this.turn;
 	}
+	
+	@Override	
+	public String toString() {	
+		return "Player{" +	
+			"expGauges=" + Arrays.toString(expGauges) +	
+			", maxCapacity=" + maxCapacity +	
+			", inventory=" + inventory +	
+			", index=" + index +	
+			", id=" + id +	
+			", turn=" + turn +	
+			'}';	
+	}	
+
 
 }

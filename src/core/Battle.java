@@ -2,7 +2,7 @@ package core;
 
 import util.Util;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class Battle {
 	//instance variables for PvM
@@ -201,7 +201,7 @@ public class Battle {
 
 	}
 
-	public void PKStart(Board board) {
+	public void PvPStart(Board board) {
 		System.out.printf("%n[Player %d](%dHP) will fight [Player %d](%dHP)%n",
 			player1.getId(), player1.Health, player2.getId(), player2.Health);
 
@@ -311,7 +311,7 @@ public class Battle {
 				player.getId(), player.Health, playerToAttack.getId(), playerToAttack.Health);
 
 			//player gets playerToAttack items
-			List<Item> defeatedInventory = playerToAttack.getItems();
+			ArrayList<Item> defeatedInventory = playerToAttack.getItems();
 			if (defeatedInventory.size() != 0) {
 				Item defeatedDrop = defeatedInventory.get(Util.RandomBetween(0, defeatedInventory.size()));
 				player.addItem(defeatedDrop);
@@ -339,7 +339,7 @@ public class Battle {
 	}
 
 	// 0 if didn't use item, 1 if used item, 2 if used smoke bomb
-	int tryUseItem(Player player) {
+	private int tryUseItem(Player player) {
 		System.out.printf("%n[Player %d] chose item to use%n", player.getId());
 		System.out.println("1. Back");
 
