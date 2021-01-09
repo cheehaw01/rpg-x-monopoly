@@ -339,7 +339,7 @@ public class Battle {
 	}
 
 	// 0 if didn't use item, 1 if used item, 2 if used smoke bomb
-	public int tryUseItem(Player player) {
+	private int tryUseItem(Player player) {
 		System.out.printf("%n[Player %d] chose item to use%n", player.getId());
 		System.out.println("1. Back");
 
