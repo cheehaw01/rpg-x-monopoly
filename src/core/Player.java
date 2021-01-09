@@ -26,6 +26,7 @@ public class Player extends Role implements Comparable<Player> {
 		Agility = 5;
 		Gold = 200;
 		Exp = 0;
+		Effect = "";
 
 		Type = "Normal";
 		Types = new String[]{"Normal", "Melee", "Mage", "Archer"};
