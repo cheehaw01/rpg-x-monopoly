@@ -9,6 +9,7 @@ public abstract class Role {
 	public int Gold;
 	public int Exp;
 	public String Effect;
+	public int maxLevel;
 
 	public String Type;
 	public String[] Types;

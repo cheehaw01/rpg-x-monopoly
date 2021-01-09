@@ -5,14 +5,15 @@ import util.Util;
 public class Monster extends Role {
 	public Monster(Player player) {
 		Level = 1;
+		maxLevel = 5;
 
 		Types = new String[]{"Tanker", "Lunatic", "Trickster", "Fallen Mage"};
 		// Health Strength Defense Agility (By level)
 		Stats = new int[][][]{
-			/*Tanker*/{{100, 250, 400, 550}, {10, 20, 30, 40}, {50, 60, 70, 80}, {5, 10, 15, 20}},
-			/*Lunatic*/{{50, 100, 150, 200}, {30, 50, 70, 90}, {20, 30, 40, 50}, {5, 20, 35, 50}},
-			/*Trickster*/{{50, 150, 250, 350}, {20, 30, 40, 50}, {30, 40, 50, 60}, {20, 40, 60, 80}},
-			/*Fallen Mage*/{{30, 60, 90, 120}, {10, 20, 30, 40}, {10, 20, 30, 40}, {10, 20, 30, 40}}
+			/*Tanker*/{{100, 250, 400, 550, 700}, {10, 20, 30, 40, 50}, {50, 60, 70, 80, 90}, {5, 10, 15, 20, 25}},
+			/*Lunatic*/{{50, 100, 150, 200, 250}, {30, 50, 70, 90, 110}, {20, 30, 40, 50, 60}, {5, 15, 25, 35, 45}},
+			/*Trickster*/{{50, 150, 250, 350, 450}, {20, 30, 40, 50, 60}, {30, 40, 50, 60, 70}, {10, 30, 50, 70, 90}},
+			/*Fallen Mage*/{{100, 200, 300, 400, 500}, {10, 20, 30, 40, 50}, {10, 20, 30, 40, 50}, {5, 10, 15, 20, 25}}
 		};
 
 		// Generate values and types based on player level.
@@ -43,7 +44,7 @@ public class Monster extends Role {
 		else {
 			Level = player.Level;
 		}
-		Level = Math.max(1, Math.min(Level, 4));
+		Level = Math.max(1, Math.min(Level, maxLevel));
 
 		Gold = Util.RandomBetween(10, 50) * Level;
 		Exp = Util.RandomBetween(10, 30) * Level;
@@ -58,8 +59,8 @@ public class Monster extends Role {
 		if (Type.equals("Tanker")) {
 			if (Util.RandomBetween(1, 10) == 1) {//10% chance
 				System.out.printf("Lv%d %s(%dHP) used ability: Giant's Wrath%n", Level, Type, Health);
-				//does 10*Lv% true damage to self and same value true damage to player
-				int damageToSelf = (int) (Health * 0.1 * Level);
+				//does 5*Lv% true damage to self and same value true damage to player
+				int damageToSelf = Health * Level / 20;
 				System.out.printf("Lv%d %s(%dHP) inflicted %dHP damage to self%n", Level, Type, Health, damageToSelf);
 				Health -= Math.min(Health, damageToSelf);
 				player.Health -= Math.min(player.Health, damageToSelf);
@@ -69,7 +70,7 @@ public class Monster extends Role {
 		}
 		else if (Type.equals("Trickster")) {
 			if (Util.RandomBetween(1, 10) == 1) {//10%chance
-				//causes player to self harm a 
+				//causes player to self harm
 				System.out.printf("Lv%d %s(%dHP) used ability: Confusion%n", Level, Type, Health);
 				int damageToPlayer = player.Strength * 50 / (100 + player.Defense);
 				player.Health -= Math.min(player.Health, damageToPlayer);
@@ -88,10 +89,10 @@ public class Monster extends Role {
 			}
 		}
 		else if (Type.equals("Fallen Mage")) {
-			if (Util.RandomBetween(1, 10) > 3) {//70%chance{
-				//regens 10*Lv% current health
+			if (Util.RandomBetween(1, 10) > 1) {//90%chance{
+				//regens 10% current health
 				System.out.printf("Lv%d %s(%dHP) used ability: Regeneration%n", Level, Type, Health);
-				int regen = (int) (Health * 0.1 * Level);
+				int regen = Health / 10;
 				Health += regen;
 				System.out.printf("Lv%d %s(%dHP) recovered %dHP%n", Level, Type, Health, regen);
 			}
