@@ -131,18 +131,4 @@ public class Player extends Role implements Comparable<Player> {
 		int compareTurn = ((Player) o).turn;
 		return compareTurn - this.turn;
 	}
-	
-	@Override	
-	public String toString() {	
-		return "Player{" +	
-			"expGauges=" + Arrays.toString(expGauges) +	
-			", maxCapacity=" + maxCapacity +	
-			", inventory=" + inventory +	
-			", index=" + index +	
-			", id=" + id +	
-			", turn=" + turn +	
-			'}';	
-	}	
-
-
 }

@@ -185,7 +185,7 @@ public class Game {
 				break;
 			case EMPTY:
 				if (sameTilePlayers(player) != null) {
-					new Battle(player, sameTilePlayers(player)).PKStart(board);
+					new Battle(player, sameTilePlayers(player)).PvPStart(board);
 				}
 				break;
 			case SIN_M:
@@ -193,7 +193,7 @@ public class Game {
 					new Battle(player, 1).start(board);
 				}
 				else {
-					new Battle(player, sameTilePlayers(player)).PKStart(board);
+					new Battle(player, sameTilePlayers(player)).PvPStart(board);
 				}
 
 				break;
@@ -202,7 +202,7 @@ public class Game {
 					new Battle(player, 2).start(board);
 				}
 				else {
-					new Battle(player, sameTilePlayers(player)).PKStart(board);
+					new Battle(player, sameTilePlayers(player)).PvPStart(board);
 				}
 				break;
 			case TRI_M:
@@ -210,7 +210,7 @@ public class Game {
 					new Battle(player, 3).start(board);
 				}
 				else {
-					new Battle(player, sameTilePlayers(player)).PKStart(board);
+					new Battle(player, sameTilePlayers(player)).PvPStart(board);
 				}
 				break;
 			case CHEST:
