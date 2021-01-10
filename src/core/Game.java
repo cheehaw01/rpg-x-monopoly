@@ -183,7 +183,8 @@ public class Game {
 
 		switch (currTile) {
 			case START:
-				// TODO: allow check stats and use items for START and EMPTY
+				player.Gold += 200;
+				System.out.printf("%n[Player %d] received START bonus: +200G%n", player.getId());
 				break;
 			case EMPTY:
 				tryStartBattle(player, false, 0);
