@@ -8,7 +8,9 @@ public abstract class Role {
 	public int Agility;
 	public int Gold;
 	public int Exp;
-	public String Effect;
+	public String negativeEffect;
+	public String positiveEffect;
+	public int tempStrength, tempAgility, tempDefense;
 	public int maxLevel;
 
 	public String Type;
