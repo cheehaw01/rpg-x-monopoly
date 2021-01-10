@@ -5,6 +5,7 @@ import util.Util;
 public class Monster extends Role {
 	public Monster(Player player) {
 		Level = 1;
+		negativeEffect = "";
 		maxLevel = 5;
 
 		Types = new String[]{"Tanker", "Lunatic", "Trickster", "Fallen Mage"};
