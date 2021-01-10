@@ -112,8 +112,9 @@ public class Game {
 	}
 
 	private void setupItems() {
-		itemList.add(new Item("Junk", 0, 0, 0, 0, 0, true));
+		itemList.add(new Item("Junk", 0, 0, 0, 0, 0, false));
 		itemList.add(new Item("Smoke Bomb", 400, 0, 0, 0, 0, true));
+		itemList.add(new Item("Nasi Lemak", 400, 0, 0, 0, 0, true));
 		itemList.add(new Item("Basic Sword", 200, 0, 10, 0, 0, false));
 		itemList.add(new Item("Basic Wand", 200, 0, 10, 0, 0, false));
 		itemList.add(new Item("Basic Bow", 200, 0, 10, 0, 0, false));
@@ -126,18 +127,17 @@ public class Game {
 		itemList.add(new Item("Strength Potion", 700, 0, 0, 0, 0, true));
 		itemList.add(new Item("Agility Potion", 700, 0, 0, 0, 0, true));
 		itemList.add(new Item("Defence Potion", 700, 0, 0, 0, 0, true));
-		itemList.add(new Item("HP Potion", 600, 0, 0, 0, 0, true));
+		itemList.add(new Item("HP Potion", 600, 0, 0, 0, 0, true)); // 15
 		itemList.add(new Item("Antidote", 600, 0, 0, 0, 0, true));
 		itemList.add(new Item("Lucky Potion", 600, 0, 0, 0, 0, true));
-		itemList.add(new Item("Barricade", 700, 0, 0, 0, 0, false));
-		itemList.add(new Item("Double Dice", 700, 0, 0, 0, 0, false));
+		itemList.add(new Item("Weapon Enchanter", 700, 0, 0, 0, 0, true));
 		itemList.add(new Item("Great Sword", 1100, 0, 75, 0, -20, false));
 		itemList.add(new Item("Magic Book", 1100, 100, 60, 0, 0, false));
 		itemList.add(new Item("Crossbow", 1100, 0, 65, 0, -10, false));
 		itemList.add(new Item("Titanium Armour", 1500, 0, 75, 0, -20, false));
 		itemList.add(new Item("Ability Potion", 1400, 0, 0, 0, 0, true));
 		itemList.add(new Item("Poison", 800, 0, 0, 0, 0, true));
-		itemList.add(new Item("Experience Potion", 2000, 0, 0, 0, 0, false));
+		itemList.add(new Item("Rage Potion", 2000, 0, 0, 0, 0, true));
 		itemList.add(new Item("Excalibur", 2000, 0, 130, 10, 0, false));
 		itemList.add(new Item("Infinity Ring", 2000, 200, 115, 0, 0, false));
 		itemList.add(new Item("Sniper rifle", 2000, 0, 150, 0, -10, false));
@@ -284,7 +284,7 @@ public class Game {
 			itemIndex = r.nextInt(19);
 		}
 		else {
-			itemIndex = r.nextInt(6);
+			itemIndex = r.nextInt(7);
 		}
 		Item item = itemList.get(itemIndex);
 
@@ -362,7 +362,7 @@ public class Game {
 					// List all player items
 					for (int i = 0; i < playerItems.size(); i++) {
 						Item itemToSell = playerItems.get(i);
-						System.out.printf("%d. Sell %s (%dG)%n", i + 2, itemToSell.Name, itemToSell.Cost);
+						System.out.printf("%d. Sell %s (%dG)%n", i + 2, itemToSell.Name, (itemToSell.Cost/2));
 					}
 
 					// Dynamically populate choices based on player items
@@ -384,9 +384,9 @@ public class Game {
 					int itemIndex = sellChoice - 2;
 					Item itemSold = playerItems.get(itemIndex);
 
-					player.Gold += (itemSold.Cost * 0.5); // item sold get 1/2 of original gold
+					player.Gold += (itemSold.Cost / 2); // item sold get 1/2 of original gold
 					System.out.printf("%n[Player %s] sold %s for %dG%n", player.getId(), itemSold.Name,
-						(itemSold.Cost * 0.5));
+						(itemSold.Cost / 2));
 
 					player.removeItem(itemIndex);
 
