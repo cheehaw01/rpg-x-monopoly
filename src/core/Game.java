@@ -186,34 +186,16 @@ public class Game {
 				// TODO: allow check stats and use items for START and EMPTY
 				break;
 			case EMPTY:
-				if (sameTilePlayers(player) != null) {
-					new Battle(player, sameTilePlayers(player)).PvPStart(board);
-				}
+				tryStartBattle(player, false, 0);
 				break;
 			case SIN_M:
-				if (sameTilePlayers(player) == null) {
-					new Battle(player, 1).start(board);
-				}
-				else {
-					new Battle(player, sameTilePlayers(player)).PvPStart(board);
-				}
-
+				tryStartBattle(player, true, 1);
 				break;
 			case DUO_M:
-				if (sameTilePlayers(player) == null) {
-					new Battle(player, 2).start(board);
-				}
-				else {
-					new Battle(player, sameTilePlayers(player)).PvPStart(board);
-				}
+				tryStartBattle(player, true, 2);
 				break;
 			case TRI_M:
-				if (sameTilePlayers(player) == null) {
-					new Battle(player, 3).start(board);
-				}
-				else {
-					new Battle(player, sameTilePlayers(player)).PvPStart(board);
-				}
+				tryStartBattle(player, true, 3);
 				break;
 			case CHEST:
 				giveRandomItem(player);
@@ -270,6 +252,15 @@ public class Game {
 	}
 
 	// ================ GAMEPLAY ================
+
+	private void tryStartBattle(Player player, boolean canBattleMonster, int monsterCount) {
+		if (sameTilePlayers(player) == null) {
+			new Battle(player, monsterCount).start(board);
+		}
+		else if (canBattleMonster) {
+			new Battle(player, sameTilePlayers(player)).PvPStart(board);
+		}
+	}
 
 	private void giveRandomItem(Player player) {
 		Random r = new Random();

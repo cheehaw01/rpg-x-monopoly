@@ -5,7 +5,6 @@ import util.Util;
 import java.util.ArrayList;
 
 public class Battle {
-
 	//instance variables for PvM
 	Player player;
 	Monster[] monsters;
@@ -412,7 +411,7 @@ public class Battle {
 			//player gets playerToAttack items
 			ArrayList<Item> defeatedInventory = playerToAttack.getItems();
 			if (defeatedInventory.size() != 0) {
-				Item defeatedDrop = defeatedInventory.get(Util.RandomBetween(0, defeatedInventory.size()));
+				Item defeatedDrop = defeatedInventory.get(Util.RandomBetween(0, defeatedInventory.size() - 1));
 				player.addItem(defeatedDrop);
 				System.out.printf("%n[Player %d](%dHP) get %s from [Player %d](%dHP)%n",
 					player.getId(), player.Health, defeatedDrop.Name, playerToAttack.getId(), playerToAttack.Health);

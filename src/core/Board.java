@@ -2,6 +2,7 @@ package core;
 
 import util.Util;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Board {
@@ -52,8 +53,8 @@ public class Board {
 	private void clearScreen() {
 		try {
 			new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-		} catch (Exception E) {
-			System.out.println(E);
+		} catch (Exception err) {
+			System.out.println(Arrays.toString(err.getStackTrace()));
 		}
 	}
 }
