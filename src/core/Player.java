@@ -1,5 +1,7 @@
 package core;
 
+import com.sun.java.accessibility.util.TopLevelWindowListener;
+
 import java.util.ArrayList;
 
 // Container for stats and state
@@ -10,6 +12,7 @@ public class Player extends Role implements Comparable<Player> {
 	private final ArrayList<Item> inventory = new ArrayList<>();
 
 	// STATE
+	private int loops = 0; // How many times player looped board
 	private int index = 0; // Counts from 0 - 31
 	private final int id;
 	public int turn;
@@ -25,6 +28,7 @@ public class Player extends Role implements Comparable<Player> {
 		Agility = 5;
 		Gold = 200;
 		Exp = 0;
+
 		negativeEffect = "";
 		positiveEffect = "";
 		tempStrength = 0;
@@ -44,6 +48,17 @@ public class Player extends Role implements Comparable<Player> {
 
 	public void move(int steps) {
 		index += steps;
+
+		if (index / 32 > loops) {
+			loops++;
+			System.out.printf("%n[Player %d] looped board %n", id);
+
+			// ಠ_ಠ
+			if(Level < expGauges.length) {
+				Exp += expGauges[Level - 1] - Exp;
+				levelUp();
+			}
+		}
 	}
 
 	public int getIndex() {
@@ -80,10 +95,8 @@ public class Player extends Role implements Comparable<Player> {
 	}
 
 	public void levelUp() {
-		if (Exp < 50 || Level >= 5) {
-			// dont waste runtime here
+		if (Exp < 50 || Level >= 5)
 			return;
-		}
 
 		boolean upgraded = false;
 		for (int i = 0; i < expGauges.length; i++) {
@@ -111,11 +124,11 @@ public class Player extends Role implements Comparable<Player> {
 				}
 			}
 
-			// increment stats to avoid overwritting item attributes
-			Health += Stats[typeIndex][0][Level - 1];
-			Strength += Stats[typeIndex][1][Level - 1];
-			Defense += Stats[typeIndex][2][Level - 1];
-			Agility += Stats[typeIndex][3][Level - 1];
+			// increment stats to avoid overwriting item attributes
+			Health 		+= Stats[typeIndex][0][Level - 1];
+			Strength 	+= Stats[typeIndex][1][Level - 1];
+			Defense 	+= Stats[typeIndex][2][Level - 1];
+			Agility 	+= Stats[typeIndex][3][Level - 1];
 		}
 
 	}
