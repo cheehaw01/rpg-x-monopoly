@@ -5,8 +5,6 @@ import util.Util;
 import java.util.ArrayList;
 
 public class Battle {
-	//item bonus
-	int tempStrength = 0, tempAgility = 0, tempDefense = 0;
 
 	//instance variables for PvM
 	Player player;
@@ -35,10 +33,10 @@ public class Battle {
 		while ((player.Health > 0 && monsters.length > 0)) {
 			if (isPlayerTurn) {
 				//check for player effect
-				if (player.Effect.equals("Poisoned")) {
+				if (player.negativeEffect.equals("Poisoned")) {
 					System.out.printf("%n%dHP poison damage inflicted on [Player %d](%dHP)%n"
-						, ((int) (player.Health * 0.1)), player.getId(), player.Health);
-					player.Health -= ((int) (player.Health * 0.1));
+						, ((int)(player.Health*0.1)), player.getId(), player.Health);
+					player.Health -= ((int)(player.Health*0.1));
 				}
 
 				System.out.printf("%n[Player %d](%dHP) is in battle%n", player.getId(), player.Health);
@@ -88,6 +86,11 @@ public class Battle {
 							monsterToAttack.Health -= Math.min(monsterToAttack.Health, damageToMonster);
 							System.out.printf("%n[Player %d](%dHP) inflicted %dHP damage on Lv%d %s(%dHP)%n",
 								player.getId(), player.Health, damageToMonster, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
+							if (player.positiveEffect == "Weapon Enchant") {
+								monsterToAttack.Health -= 30;
+								System.out.printf("%n[Player %d](%dHP)'s enchanted weapon deal another 30HP damage on Lv%d %s(%dHP)%n",
+								player.getId(), player.Health, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
+							}
 						}
 						else {
 							//dodged
@@ -107,7 +110,7 @@ public class Battle {
 							int selectDrop = monsterToAttack.Level;
 							switch (selectDrop) {
 								case 1:
-									dropId = Util.RandomBetween(0, 5);
+									dropId = Util.RandomBetween(0, 6);
 									break;
 								case 2:
 									dropId = Util.RandomBetween(0, 18);
@@ -130,6 +133,11 @@ public class Battle {
 							player.Gold += monsterToAttack.Gold;
 							System.out.printf("%n[Player %d](%dHP) gained %d Gold%n",
 								player.getId(), player.Health, monsterToAttack.Gold);
+							if(player.positiveEffect == "Lucky") {
+								player.Gold += monsterToAttack.Gold;
+								System.out.printf("%n[Player %d](%dHP) is lucky and gained another %d Gold%n",
+									player.getId(), player.Health, monsterToAttack.Gold);
+							}
 
 							//player gains exp
 							player.Exp += monsterToAttack.Exp;
@@ -158,6 +166,36 @@ public class Battle {
 							continue;
 						else if (res == 1)
 							break;
+						else if (res == 2) {
+							System.out.printf("%n[Player %d](%dHP) choose monster to use poison%n"
+								, player.getId(), player.Health);
+
+							System.out.println("1. Back");
+							// List all monsters
+							for (int i = 0; i < monsters.length; i++) {
+								Monster monster = monsters[i];
+								System.out.printf("%d. Attack Lv%d %s(%dHP)%n",
+									i + 2, monster.Level, monster.Type, monster.Health);
+							}
+
+							// Dynamically populate choices based on monsters
+							monsterChoices = new int[monsters.length + 1];
+							for (int i = 0; i < monsterChoices.length; i++) {
+								monsterChoices[i] = i + 1;
+							}
+
+							monsterChoice = CommandParser.readInt(monsterChoices);
+							if (monsterChoice == 1) {
+								continue;
+							}
+
+							int monsterSelectIndex = monsterChoice - 2;
+							Monster monsterToPoison = monsters[monsterSelectIndex];
+							monsterToPoison.negativeEffect = "Poisoned";
+							System.out.printf("%nLv %d %s(%dHP) is poisoned%n",
+								monsterToPoison.Level, monsterToPoison.Type, monsterToPoison.Health);
+							break;
+						}
 						else
 							return;
 					case 3:
@@ -182,6 +220,15 @@ public class Battle {
 
 				for (Monster attackingMonster : monsters) {
 					//each monster attack in turn
+					
+					//check monster's effect
+					if (attackingMonster.negativeEffect.equals("Poisoned")) {
+						System.out.printf("%n%dHP poison damage inflicted on Lv%d %s(%dHP)%n"
+							, ((int)(attackingMonster.Health*0.1)), attackingMonster.Level, attackingMonster.Type, attackingMonster.Health);
+						
+						attackingMonster.Health -= ((int)(attackingMonster.Health*0.1));
+					}
+					
 					//player dodge attack probability 0~45%
 					if (Math.random() * 200 > player.Agility) {
 						//dodge failed
@@ -210,8 +257,9 @@ public class Battle {
 		}
 
 		//player effect, bonus end.
-		potionBonusEnd(player, tempStrength, tempAgility, tempDefense);
-		player.Effect = "";
+		potionBonusEnd(player);
+		player.negativeEffect = "";
+		player.positiveEffect = "";
 
 	}
 
@@ -221,11 +269,11 @@ public class Battle {
 
 		while ((player1.Health > 0 && player2.Health > 0)) {
 			if (isPlayerTurn) {
-				//check for player 1 effect
-				if (player1.Effect.equals("Poisoned")) {
+				//check for effect
+				if (player1.negativeEffect.equals("Poisoned")) {
 					System.out.printf("%n%dHP poison damage inflicted on [Player %d](%dHP)%n"
-						, ((int) (player1.Health * 0.1)), player1.getId(), player1.Health);
-					player1.Health -= ((int) (player1.Health * 0.1));
+						, ((int)(player1.Health*0.1)), player1.getId(), player1.Health);
+					player1.Health -= ((int)(player1.Health*0.1));
 				}
 
 				System.out.printf("%n[Player %d](%dHP) is in battle%n", player1.getId(), player1.Health);
@@ -252,6 +300,11 @@ public class Battle {
 							continue;
 						else if (res == 1)
 							break;
+						else if (res == 2) {
+							player2.negativeEffect = "Poisoned";
+							System.out.printf("%n[Player %d](%dHP) is poisoned%n", player2.getId(), player2.Health);
+							break;
+						}
 						else
 							return;
 					case 3:
@@ -270,11 +323,11 @@ public class Battle {
 				}
 			}
 			else {
-				//check for player 2 effect
-				if (player1.Effect.equals("Poisoned")) {
+				//check for effect
+				if (player2.negativeEffect.equals("Poisoned")) {
 					System.out.printf("%n%dHP poison damage inflicted on [Player %d](%dHP)%n"
-						, ((int) (player1.Health * 0.1)), player1.getId(), player1.Health);
-					player1.Health -= ((int) (player1.Health * 0.1));
+						, ((int)(player2.Health*0.1)), player2.getId(), player2.Health);
+					player2.Health -= ((int)(player2.Health*0.1));
 				}
 
 				System.out.printf("%n[Player %d](%dHP) is in battle%n", player2.getId(), player2.Health);
@@ -298,6 +351,11 @@ public class Battle {
 							continue;
 						else if (res == 1)
 							break;
+						else if (res == 2) {
+							player1.negativeEffect = "Poisoned";
+							System.out.printf("%n[Player %d](%dHP) is poisoned%n", player1.getId(), player1.Health);
+							break;
+						}
 						else
 							return;
 					case 3:
@@ -318,11 +376,13 @@ public class Battle {
 			isPlayerTurn = !isPlayerTurn;
 		}
 
-		//both player effect and bonus end.
-		potionBonusEnd(player1, tempStrength, tempAgility, tempDefense);
-		player1.Effect = "";
-		potionBonusEnd(player2, tempStrength, tempAgility, tempDefense);
-		player2.Effect = "";
+		//both player effect, bonus end.
+		potionBonusEnd(player1);
+		player1.negativeEffect = "";
+		player1.positiveEffect = "";
+		potionBonusEnd(player2);
+		player2.negativeEffect = "";
+		player2.positiveEffect = "";
 	}
 
 	public void attackPlayer(Player player, Player playerToAttack) {
@@ -332,6 +392,11 @@ public class Battle {
 			playerToAttack.Health -= Math.min(playerToAttack.Health, damage);
 			System.out.printf("%n[Player %d](%dHP) inflicted %dHP damage on [Player %d](%dHP)%n",
 				player.getId(), player.Health, damage, playerToAttack.getId(), playerToAttack.Health);
+			if (player.positiveEffect == "Weapon Enchant") {
+				playerToAttack.Health -= 30;
+				System.out.printf("%n[Player %d](%dHP)'s enchanted weapon deal another 30HP damage on [Player %d](%dHP)%n",
+					player.getId(), player.Health, playerToAttack.getId(), playerToAttack.Health);
+			}
 		}
 		else {
 			//dodged
@@ -361,6 +426,11 @@ public class Battle {
 			player.Gold += (playerToAttack.Gold / 2);
 			System.out.printf("%n[Player %d](%dHP) gained %d Gold%n",
 				player.getId(), player.Health, (playerToAttack.Gold / 2));
+			if(player.positiveEffect == "Lucky") {
+				player.Gold += (playerToAttack.Gold/2);
+				System.out.printf("%n[Player %d](%dHP) is lucky and gained another %d Gold%n",
+					player.getId(), player.Health, (playerToAttack.Gold/2));
+			}
 
 			//player gains exp = 50% playerToAttack exp
 			player.Exp += playerToAttack.Exp / 2;
@@ -372,7 +442,7 @@ public class Battle {
 		}
 	}
 
-	// 0 if didn't use item, 1 if used item, 2 if used smoke bomb
+	// 0 if didn't use item, 1 if used item, 3 if used smoke bomb
 	private int tryUseItem(Player player) {
 		System.out.printf("%n[Player %d] chose item to use%n", player.getId());
 		System.out.println("1. Back");
@@ -418,68 +488,93 @@ public class Battle {
 
 		if (itemToUse.Name.equals("Smoke Bomb")) {
 			System.out.printf("%n[Player %d] escaped the battle%n", player.getId());
-			return 2;
+			return 3;
 		}
+		else if(itemToUse.Name.equals("Poison"))
+			return 2;
 		else {
-			if (itemToUse.Name.equals("Strength Potion")) {
+			if(itemToUse.Name.equals("Strength Potion")) {
 				System.out.printf("%n[Player %d](%dHP) use %s, strength increase by %d%n",
-					player.getId(), player.Health, itemToUse.Name, ((int) (player.Strength * 0.2)));
-				potionBonusEnd(player, tempStrength, tempAgility, tempDefense);
-				tempStrength = ((int) (player.Strength * 0.2));
-				potionBonus(player, tempStrength, tempAgility, tempDefense);
+					player.getId(), player.Health, itemToUse.Name, ((int)(player.Strength*0.2)));
+				potionBonusEnd(player);
+				player.tempStrength = ((int)(player.Strength*0.2));
+				potionBonus(player);
 			}
-			if (itemToUse.Name.equals("Agility Potion")) {
+			if(itemToUse.Name.equals("Agility Potion")) {
+				System.out.printf("%n[Player %d](%dHP) use %s, agility increase by %d%n",
+					player.getId(), player.Health, itemToUse.Name, ((int)(player.Agility*0.2)));
+				potionBonusEnd(player);
+				player.tempAgility = ((int)(player.Agility*0.2));
+				potionBonus(player);
+			}
+			if(itemToUse.Name.equals("Defence Potion")) {
 				System.out.printf("%n[Player %d](%dHP) use %s, defense increase by %d%n",
-					player.getId(), player.Health, itemToUse.Name, ((int) (player.Defense * 0.2)));
-				potionBonusEnd(player, tempStrength, tempAgility, tempDefense);
-				tempDefense = ((int) (player.Defense * 0.2));
-				potionBonus(player, tempStrength, tempAgility, tempDefense);
+					player.getId(), player.Health, itemToUse.Name, ((int)(player.Defense*0.2)));
+				potionBonusEnd(player);
+				player.tempDefense = ((int)(player.Defense*0.2));
+				potionBonus(player);
 			}
-			if (itemToUse.Name.equals("Defence Potion")) {
-				System.out.printf("%n[Player %d](%dHP) use %s, defense increase by %d%n",
-					player.getId(), player.Health, itemToUse.Name, ((int) (player.Defense * 0.2)));
-				potionBonusEnd(player, tempStrength, tempAgility, tempDefense);
-				tempDefense = ((int) (player.Defense * 0.2));
-				potionBonus(player, tempStrength, tempAgility, tempDefense);
-			}
-			if (itemToUse.Name.equals("Ability Potion")) {
+			if(itemToUse.Name.equals("Ability Potion")) {
 				System.out.printf("%n[Player %d](%dHP) use %s, strength +%d, agility +%d and defense +%d %n",
 					player.getId(), player.Health, itemToUse.Name,
-					((int) (player.Strength * 0.2)), ((int) (player.Agility * 0.2)), (int) (player.Defense * 0.2));
-				potionBonusEnd(player, tempStrength, tempAgility, tempDefense);
-				tempStrength = ((int) (player.Strength * 0.2));
-				tempAgility = ((int) (player.Agility * 0.2));
-				tempDefense = ((int) (player.Defense * 0.2));
-				potionBonus(player, tempStrength, tempAgility, tempDefense);
+					((int)(player.Strength*0.2)), ((int)(player.Agility*0.2)), (int)(player.Defense*0.2));
+				potionBonusEnd(player);
+				player.tempStrength = ((int)(player.Strength*0.2));
+				player.tempAgility = ((int)(player.Agility*0.2));
+				player.tempDefense = ((int)(player.Defense*0.2));
+				potionBonus(player);
 			}
-			if (itemToUse.Name.equals("HP Potion")) {
+			if(itemToUse.Name.equals("Rage Potion")) {
+				System.out.printf("%n[Player %d](%dHP) use %s, strength +%d, agility +%d and defense +%d %n",
+					player.getId(), player.Health, itemToUse.Name,
+					((int)(player.Strength*0.5)), ((int)(player.Agility*0.5)), (int)(player.Defense*0.5));
+				potionBonusEnd(player);
+				player.tempStrength = ((int)(player.Strength*0.5));
+				player.tempAgility = ((int)(player.Agility*0.5));
+				player.tempDefense = ((int)(player.Defense*0.5));
+				potionBonus(player);
+			}
+			if(itemToUse.Name.equals("HP Potion")) {
 				System.out.printf("%n[Player %d](%dHP) use %s, recover %d HP%n",
-					player.getId(), player.Health, itemToUse.Name, ((int) (player.Health * 0.2)));
-				player.Health += ((int) (player.Health * 0.2));
+					player.getId(), player.Health, itemToUse.Name, ((int)(player.Health*0.2)));
+				player.Health += ((int)(player.Health*0.2));
 			}
-			if (itemToUse.Name.equals("Antidote")) {
-				if (player.Effect.equals("Poisoned")) {
-					player.Effect = "";
+			if(itemToUse.Name.equals("Nasi Lemak")) {
+				System.out.printf("%n[Player %d](%dHP) eat %s, recover 50 HP%n",
+					player.getId(), player.Health, itemToUse.Name);
+				player.Health += 50;
+			}
+			if(itemToUse.Name.equals("Antidote")) {
+				if (player.negativeEffect.equals("Poisoned")) {
+					player.negativeEffect = "";
 					System.out.printf("%n[Player %d] release effect of poison with %s%n", player.getId(), itemToUse.Name);
 				}
 				else {
 					System.out.printf("%n[Player %d] is not poisoned%n", player.getId());
 				}
 			}
+			if(itemToUse.Name.equals("Weapon Enchanter")) {
+				player.positiveEffect = "Weapon Enchant";
+				System.out.printf("%n[Player %d] weapon is enchanted%n", player.getId());
+			}
+			if(itemToUse.Name.equals("Lucky Potion")) {
+				player.positiveEffect = "Lucky";
+				System.out.printf("%n[Player %d] is now lucky%n", player.getId());
+			}
 			return 1;
 		}
 	}
 
-	public void potionBonus(Player player, int tempStrength, int tempAgility, int tempDefense) {
-		player.Strength += tempStrength;
-		player.Agility += tempAgility;
-		player.Defense += tempDefense;
+	public void potionBonus(Player player) {
+		player.Strength += player.tempStrength;
+		player.Agility += player.tempAgility;
+		player.Defense += player.tempDefense;
 	}
 
-	public void potionBonusEnd(Player player, int tempStrength, int tempAgility, int tempDefense) {
-		player.Strength -= tempStrength;
-		player.Agility -= tempAgility;
-		player.Defense -= tempDefense;
+	public void potionBonusEnd(Player player) {
+		player.Strength -= player.tempStrength;
+		player.Agility -= player.tempAgility;
+		player.Defense -= player.tempDefense;
 	}
 }
 
