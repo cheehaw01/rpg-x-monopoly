@@ -566,14 +566,16 @@ public class Battle {
 
 	public void potionBonus(Player player) {
 		player.Strength += player.tempStrength;
-		player.Agility += player.tempAgility;
 		player.Defense += player.tempDefense;
+		player.Agility += player.tempAgility;
+		player.Agility = Math.max(0, Math.min(player.Agility, 90));
 	}
 
 	public void potionBonusEnd(Player player) {
 		player.Strength -= player.tempStrength;
-		player.Agility -= player.tempAgility;
 		player.Defense -= player.tempDefense;
+		player.Agility -= player.tempAgility;
+		player.Agility = Math.max(0, Math.min(player.Agility, 90));
 	}
 }
 
