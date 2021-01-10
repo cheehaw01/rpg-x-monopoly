@@ -25,7 +25,11 @@ public class Player extends Role implements Comparable<Player> {
 		Agility = 5;
 		Gold = 200;
 		Exp = 0;
-		Effect = "";
+		negativeEffect = "";
+		positiveEffect = "";
+		tempStrength = 0;
+		tempAgility = 0;
+		tempDefense = 0;
 		maxLevel = 5;
 
 		Type = "Normal";
