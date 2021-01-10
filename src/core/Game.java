@@ -8,7 +8,7 @@ public class Game {
 	private final Board board;
 
 	private List<Player> players;
-	private List<Player> removedPlayers;
+	private final List<Player> removedPlayers;
 	private int currentPlayerIndex;
 
 	public static List<Item> itemList;
@@ -148,8 +148,9 @@ public class Game {
 		int[] turnArr = new int[players.size()];
 		while (findDuplicate(turnArr)) {
 			// store roll dice into player object turn variable
-			for (int i = 0; i < players.size(); i++)
-				players.get(i).turn = DiceRoller.Roll();
+			for (Player player : players)
+				player.turn = DiceRoller.Roll();
+
 			// array used for checking duplicate
 			for (int i = 0; i < players.size(); i++)
 				turnArr[i] = players.get(i).turn;
@@ -164,6 +165,7 @@ public class Game {
 			for (int j = i + 1; j < arr.length; j++) {
 				if (arr[i] == (arr[j])) {
 					duplicate = true;
+					break;
 				}
 			}
 		}
@@ -255,9 +257,9 @@ public class Game {
 		// checks if player landed on tile with other players
 		int sameTilePlayers = 0;
 		Player playerToBattle = null;
-		for (int i = 0; i < players.size(); i++) {
-			if (player.getId() != players.get(i).getId() && player.getIndex() == players.get(i).getIndex()) {
-				playerToBattle = players.get(i);
+		for (Player value : players) {
+			if (player.getId() != value.getId() && player.getIndex() == value.getIndex()) {
+				playerToBattle = value;
 				sameTilePlayers++;
 			}
 		}
@@ -273,7 +275,7 @@ public class Game {
 		Random r = new Random();
 
 		int itemAppear = r.nextInt(100) + 1;
-		int itemIndex = 0;
+		int itemIndex;
 		if (itemAppear <= 5 || itemAppear >= 95) {
 			itemIndex = r.nextInt(itemList.size());
 		}
@@ -362,7 +364,7 @@ public class Game {
 					// List all player items
 					for (int i = 0; i < playerItems.size(); i++) {
 						Item itemToSell = playerItems.get(i);
-						System.out.printf("%d. Sell %s (%dG)%n", i + 2, itemToSell.Name, (itemToSell.Cost/2));
+						System.out.printf("%d. Sell %s (%dG)%n", i + 2, itemToSell.Name, (itemToSell.Cost / 2));
 					}
 
 					// Dynamically populate choices based on player items
