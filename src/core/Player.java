@@ -52,12 +52,9 @@ public class Player extends Role implements Comparable<Player> {
 		if (index / 32 > loops) {
 			loops++;
 			System.out.printf("%n[Player %d] looped board %n", id);
-
-			// ಠ_ಠ
-			if(Level < expGauges.length) {
-				Exp += expGauges[Level - 1] - Exp;
-				levelUp();
-			}
+			levelUp();
+			Gold += 200;
+			System.out.printf("%n[Player %d] received round bonus: +200G%n", id);
 		}
 	}
 
