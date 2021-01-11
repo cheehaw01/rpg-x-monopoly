@@ -315,6 +315,7 @@ public class Battle {
 		potionBonusEnd(player);
 		player.negativeEffect = "";
 		player.positiveEffect = "";
+		player.tempAbilityToZero();
 
 	}
 
@@ -470,9 +471,11 @@ public class Battle {
 		potionBonusEnd(player1);
 		player1.negativeEffect = "";
 		player1.positiveEffect = "";
+		player1.tempAbilityToZero();
 		potionBonusEnd(player2);
 		player2.negativeEffect = "";
 		player2.positiveEffect = "";
+		player2.tempAbilityToZero();
 	}
 
 	public void attackPlayer(Player player, Player playerToAttack,BoardPanel boardPanel ) {
@@ -638,6 +641,7 @@ public class Battle {
 		boardPanel.getMessage().setText(line43);
 			
 				potionBonusEnd(player);
+				player.tempAbilityToZero();
 				player.tempStrength = ((int) (player.Strength * 0.2));
 				potionBonus(player);
 			}
@@ -648,6 +652,7 @@ public class Battle {
 		boardPanel.getMessage().setText(line44);
 
 				potionBonusEnd(player);
+				player.tempAbilityToZero();
 				player.tempAgility = ((int) (player.Agility * 0.2));
 				potionBonus(player);
 			}
@@ -659,6 +664,7 @@ public class Battle {
 		boardPanel.getMessage().setText(line45);
 				
 				potionBonusEnd(player);
+				player.tempAbilityToZero();
 				player.tempDefense = ((int) (player.Defense * 0.2));
 				potionBonus(player);
 			}
@@ -670,6 +676,7 @@ public class Battle {
 		boardPanel.getMessage().setText(line46);
 				
 				potionBonusEnd(player);
+				player.tempAbilityToZero();
 				player.tempStrength = ((int) (player.Strength * 0.2));
 				player.tempAgility = ((int) (player.Agility * 0.2));
 				player.tempDefense = ((int) (player.Defense * 0.2));
@@ -684,6 +691,7 @@ public class Battle {
 
 			
 				potionBonusEnd(player);
+				player.tempAbilityToZero();
 				player.tempStrength = ((int) (player.Strength * 0.5));
 				player.tempAgility = ((int) (player.Agility * 0.5));
 				player.tempDefense = ((int) (player.Defense * 0.5));
