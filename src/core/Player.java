@@ -90,6 +90,12 @@ public class Player extends Role implements Comparable<Player> {
 		Agility -= item.AgilityBonus;
 		Agility = Math.max(0, Math.min(Agility, 90));
 	}
+	
+	public void tempAbilityToZero() {
+		tempAgility = 0;
+		tempDefense = 0;
+		tempStrength = 0;
+	}
 
 	public void levelUp() {
 		if (Exp < 50 || Level >= 5)
