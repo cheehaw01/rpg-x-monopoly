@@ -28,35 +28,46 @@ public class Battle {
 		this.player2 = player2;
 	}
 
-	public void start(Board board) {
+	public void start(Board board, BoardPanel boardPanel) {
 		while ((player.Health > 0 && monsters.length > 0)) {
 			if (isPlayerTurn) {
 				//check for player effect
 				if (player.negativeEffect.equals("Poisoned")) {
-					System.out.printf("%n%dHP poison damage inflicted on [Player %d](%dHP)%n"
-						, ((int) (player.Health * 0.1)), player.getId(), player.Health);
+					String format = String.format("%n%dHP poison damage inflicted on [Player %d](%dHP)%n", ((int) (player.Health * 0.1)), player.getId(), player.Health);
+                    boardPanel.getMessage().setText(format);
+                    System.out.printf(format);
 					player.Health -= ((int) (player.Health * 0.1));
 				}
 
-				System.out.printf("%n[Player %d](%dHP) is in battle%n", player.getId(), player.Health);
-				System.out.println("1. Attack");
-				System.out.println("2. Use Item");
-				System.out.printf("3. Flee(%d%c)%n", player.Agility, '%');
-
+				String line1 = String.format("%n[Player %d](%dHP) is in battle%n", player.getId(), player.Health);
+                System.out.printf(line1);
+                String line2 = "1. Attack";
+                System.out.println(line2);
+                String line3 = "2. Use Item";
+                System.out.println(line3);
+                String format1 = String.format("3. Flee(%s)%n", player.Agility);
+                System.out.printf(format1);
+                boardPanel.getCommand().setText(line1+"\n"+line2+"\n"+line3+"\n"+format1);
 				int choice = CommandParser.readInt(new int[]{1, 2, 3});
 
 				switch (choice) {
 					case 1:
 						board.draw();
-						System.out.printf("%n[Player %d](%dHP) chose monster to attack%n",
-							player.getId(), player.Health);
+						String format = String.format("%n[Player %d](%dHP) chose monster to attack%n", player.getId(), player.Health);
+						System.out.printf(format);
+						
+						String format00 = "1. Back";
+						System.out.println(format00);
 
-						System.out.println("1. Back");
+						boardPanel.getMessage().setText(format+"\n"+format00);
 						// List all monsters
 						for (int i = 0; i < monsters.length; i++) {
 							Monster monster = monsters[i];
-							System.out.printf("%d. Attack Lv%d %s(%dHP)%n",
-								i + 2, monster.Level, monster.Type, monster.Health);
+
+							String format09 = String.format("%d. Attack Lv%d %s(%dHP)%n",
+							i + 2, monster.Level, monster.Type, monster.Health);
+							System.out.printf(format09);
+							boardPanel.getMessage().setText(format09);
 						}
 
 						// Dynamically populate choices based on monsters
@@ -83,24 +94,35 @@ public class Battle {
 
 							int damageToMonster = player.Strength * 100 / (100 + monsterToAttack.Defense);
 							monsterToAttack.Health -= Math.min(monsterToAttack.Health, damageToMonster);
-							System.out.printf("%n[Player %d](%dHP) inflicted %dHP damage on Lv%d %s(%dHP)%n",
-								player.getId(), player.Health, damageToMonster, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
+							String line4 = String.format("%n[Player %d](%dHP) inflicted %dHP damage on Lv%d %s(%dHP)%n",
+                            player.getId(), player.Health, damageToMonster, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
+                            boardPanel.getMessage().setText(line4);
+							System.out.printf(line4);
+							
 							if (player.positiveEffect.equals("Weapon Enchant")) {
 								monsterToAttack.Health -= 30;
-								System.out.printf("%n[Player %d](%dHP)'s enchanted weapon deal another 30HP damage on Lv%d %s(%dHP)%n",
-									player.getId(), player.Health, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
+								String line08 = String.format("%n[Player %d](%dHP)'s enchanted weapon deal another 30HP damage on Lv%d %s(%dHP)%n",
+								player.getId(), player.Health, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
+                            boardPanel.getMessage().setText(line08);
+							System.out.printf(line08);
+							
+						
 							}
 						}
 						else {
 							//dodged
-							System.out.printf("%nLv %d %s(%dHP) dodged [Player %d](%dHP)'s attack%n",
-								monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health, player.getId(), player.Health);
+							String line5 = String.format("%nLv %d %s(%dHP) dodged [Player %d](%dHP)'s attack%n",
+                            monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health, player.getId(), player.Health);
+                            boardPanel.getMessage().setText(line5);
+                            System.out.printf(line5);
 						}
 
 						//monster defeated
 						if (monsterToAttack.Health <= 0) {
-							System.out.printf("%n[Player %d](%dHP) defeated Lv%d %s(%dHP)%n",
-								player.getId(), player.Health, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
+							String line6 = String.format("%n[Player %d](%dHP) defeated Lv%d %s(%dHP)%n",
+                            player.getId(), player.Health, monsterToAttack.Level, monsterToAttack.Type, monsterToAttack.Health);
+                            boardPanel.getMessage().setText(line6);
+                            System.out.printf(line6);
 							//remove monsterToAttack from monsters
 							Monster[] tempArrayMonsters = new Monster[monsters.length - 1];
 
@@ -124,24 +146,33 @@ public class Battle {
 							Item itemDrop = Game.itemList.get(dropId);
 
 							//player gets item drop
-							player.addItem(itemDrop);
-							System.out.printf("%n[Player %d](%dHP) got %s from drop%n",
-								player.getId(), player.Health, itemDrop.Name);
+							String line7 = String.format("%n[Player %d](%dHP) got %s from drop%n",
+                            player.getId(), player.Health, itemDrop.Name);
+                            boardPanel.getMessage().setText(line7);
+                            System.out.printf(line7);
 
 							//player gets gold
 							player.Gold += monsterToAttack.Gold;
-							System.out.printf("%n[Player %d](%dHP) gained %d Gold%n",
-								player.getId(), player.Health, monsterToAttack.Gold);
+							String line8 = String.format("%n[Player %d](%dHP) gained %d Gold%n",
+                            player.getId(), player.Health, monsterToAttack.Gold);
+							boardPanel.getMessage().setText(line8);
+							System.out.printf(line8);
 							if (player.positiveEffect.equals("Lucky")) {
 								player.Gold += monsterToAttack.Gold;
-								System.out.printf("%n[Player %d](%dHP) is lucky and gained another %d Gold%n",
-									player.getId(), player.Health, monsterToAttack.Gold);
+
+								String line07 = String.format("%n[Player %d](%dHP) is lucky and gained another %d Gold%n",
+								player.getId(), player.Health, monsterToAttack.Gold);
+								boardPanel.getMessage().setText(line07);
+								System.out.printf(line07);
+					
 							}
 
 							//player gains exp
 							player.Exp += monsterToAttack.Exp;
-							System.out.printf("%n[Player %d](%dHP) gained %d EXP%n",
-								player.getId(), player.Health, monsterToAttack.Exp);
+							String line9 = String.format("%n[Player %d](%dHP) gained %d EXP%n",
+                            player.getId(), player.Health, monsterToAttack.Exp);
+                            boardPanel.getMessage().setText(line9);
+                            System.out.printf(line9);
 
 							//check for level up
 							player.levelUp();
@@ -159,22 +190,29 @@ public class Battle {
 					case 2:
 						board.draw();
 
-						int res = tryUseItem(player);
+						int res = tryUseItem(player, boardPanel);
 
 						if (res == 0)
 							continue;
 						else if (res == 1)
 							break;
 						else if (res == 2) {
-							System.out.printf("%n[Player %d](%dHP) choose monster to use poison%n"
+			
+								String line06 = String.format("%n[Player %d](%dHP) choose monster to use poison%n"
 								, player.getId(), player.Health);
+								boardPanel.getMessage().setText(line06);
+								System.out.printf(line06);
 
 							System.out.println("1. Back");
 							// List all monsters
 							for (int i = 0; i < monsters.length; i++) {
 								Monster monster = monsters[i];
-								System.out.printf("%d. Attack Lv%d %s(%dHP)%n",
-									i + 2, monster.Level, monster.Type, monster.Health);
+
+								String line05 = String.format("%d. Attack Lv%d %s(%dHP)%n",
+								i + 2, monster.Level, monster.Type, monster.Health);
+								boardPanel.getMessage().setText(line05);
+								System.out.printf(line05);
+								
 							}
 
 							// Dynamically populate choices based on monsters
@@ -191,8 +229,12 @@ public class Battle {
 							int monsterSelectIndex = monsterChoice - 2;
 							Monster monsterToPoison = monsters[monsterSelectIndex];
 							monsterToPoison.negativeEffect = "Poisoned";
-							System.out.printf("%nLv %d %s(%dHP) is poisoned%n",
-								monsterToPoison.Level, monsterToPoison.Type, monsterToPoison.Health);
+
+							String line04 = String.format("%nLv %d %s(%dHP) is poisoned%n",
+							monsterToPoison.Level, monsterToPoison.Type, monsterToPoison.Health);
+								boardPanel.getMessage().setText(line04);
+								System.out.printf(line04);
+						
 							break;
 						}
 						else
@@ -201,13 +243,17 @@ public class Battle {
 						board.draw();
 
 						if (Math.random() * 100 < player.Agility) {
-							System.out.printf("%n[Player %d] fled the battle%n",
-								player.getId());
+							String line10 = String.format("%n[Player %d] fled the battle%n",
+                            player.getId());
+                            boardPanel.getMessage().setText(line10);
+                            System.out.printf(line10);
 							return;
 						}
 						else {
-							System.out.printf("%n[Player %d] flee unsuccessful%n",
-								player.getId());
+							String line11 = String.format("%n[Player %d] flee unsuccessful%n",
+                            player.getId());
+                            boardPanel.getMessage().setText(line11);
+                            System.out.printf(line11);
 						}
 
 						break;
@@ -222,9 +268,11 @@ public class Battle {
 
 					//check monster's effect
 					if (attackingMonster.negativeEffect.equals("Poisoned")) {
-						System.out.printf("%n%dHP poison damage inflicted on Lv%d %s(%dHP)%n"
-							, ((int) (attackingMonster.Health * 0.1)), attackingMonster.Level, attackingMonster.Type, attackingMonster.Health);
 
+						String line04 = String.format("%n%dHP poison damage inflicted on Lv%d %s(%dHP)%n"
+						, ((int) (attackingMonster.Health * 0.1)), attackingMonster.Level, attackingMonster.Type, attackingMonster.Health);
+								boardPanel.getMessage().setText(line04);
+								System.out.printf(line04);
 						attackingMonster.Health -= ((int) (attackingMonster.Health * 0.1));
 					}
 
@@ -233,19 +281,27 @@ public class Battle {
 						//dodge failed
 						int damageToPlayer = attackingMonster.Strength * 100 / (100 + player.Defense);
 						player.Health -= Math.min(player.Health, damageToPlayer);
-						System.out.printf("%nLv%d %s(%dHP) inflicted %dHP damage on [Player %d](%dHP)%n",
-							attackingMonster.Level, attackingMonster.Type, attackingMonster.Health, damageToPlayer, player.getId(), player.Health);
+						String line12 = String.format("%nLv%d %s(%dHP) inflicted %dHP damage on [Player %d](%dHP)%n",
+                        attackingMonster.Level, attackingMonster.Type, attackingMonster.Health, damageToPlayer, player.getId(), player.Health);
+                attackingMonster.useAbility(player);//use monster ability
+                        boardPanel.getMessage().setText(line12);
+                        System.out.printf(line12);
+	
 						attackingMonster.useAbility(player);//use monster ability
 						if (player.Health <= 0) {
 							//player defeated
-							System.out.printf("%n[Player %d](%dHP) was defeated by Lv %d %s(%dHP)%n",
-								player.getId(), player.Health, attackingMonster.Level, attackingMonster.Type, attackingMonster.Health);
+							String line13 = String.format("%n[Player %d](%dHP) was defeated by Lv %d %s(%dHP)%n",
+                            player.getId(), player.Health, attackingMonster.Level, attackingMonster.Type, attackingMonster.Health);
+                        boardPanel.getMessage().setText(line13);
+						System.out.printf(line13);
 						}
 					}
 					else {
 						//dodged
-						System.out.printf("%n[Player %d](%dHP) dodged Lv%d %s(%dHP)'s attack%n",
-							player.getId(), player.Health, attackingMonster.Level, attackingMonster.Type, attackingMonster.Health);
+						String line14 = String.format("%n[Player %d](%dHP) dodged Lv%d %s(%dHP)'s attack%n",
+                        player.getId(), player.Health, attackingMonster.Level, attackingMonster.Type, attackingMonster.Health);
+                        boardPanel.getMessage().setText(line14);
+						System.out.printf(line14);
 					}
 				}
 
@@ -262,30 +318,43 @@ public class Battle {
 
 	}
 
-	public void PvPStart(Board board) {
-		System.out.printf("%n[Player %d](%dHP) will fight [Player %d](%dHP)%n",
-			player1.getId(), player1.Health, player2.getId(), player2.Health);
+	public void PvPStart(Board board, BoardPanel boardPanel) {
+		String line15 = String.format("%n[Player %d](%dHP) will fight [Player %d](%dHP)%n",
+        player1.getId(), player1.Health, player2.getId(), player2.Health);
+                        boardPanel.getMessage().setText(line15);
+                        System.out.printf(line15);
 
 		while ((player1.Health > 0 && player2.Health > 0)) {
 			if (isPlayerTurn) {
 				//check for effect
 				if (player1.negativeEffect.equals("Poisoned")) {
-					System.out.printf("%n%dHP poison damage inflicted on [Player %d](%dHP)%n"
-						, ((int) (player1.Health * 0.1)), player1.getId(), player1.Health);
+
+					String line16 = String.format("%n%dHP poison damage inflicted on [Player %d](%dHP)%n"
+                    , ((int) (player1.Health * 0.1)), player1.getId(), player1.Health);
+			player1.Health -= ((int) (player1.Health * 0.1));
+			boardPanel.getMessage().setText(line16);
+                                    System.out.printf(line16);
+
 					player1.Health -= ((int) (player1.Health * 0.1));
 				}
 
-				System.out.printf("%n[Player %d](%dHP) is in battle%n", player1.getId(), player1.Health);
-				System.out.printf("1. Attack [Player %d](%dHP)%n", player2.getId(), player2.Health);
-				System.out.println("2. Use Item");
-				System.out.printf("3. Flee(%d%c)%n", player1.Agility, '%');
+				String line17 = String.format("%n[Player %d](%dHP) is in battle%n", player1.getId(), player1.Health);
+                System.out.printf(line17);
+                String line18 = String.format("1. Attack [Player %d](%dHP)%n", player2.getId(), player2.Health);
+                System.out.println(line18);
+                String line19 = "2. Use Item";
+                System.out.println(line19);
+                String Line20 = String.format("3. Flee(%d%c)%n", player1.Agility, '%');
+                System.out.println(20);
+                boardPanel.getCommand().setText(line17+"\n"+line18+"\n"+line19+"\n"+Line20);
+
 
 				int choice = CommandParser.readInt(new int[]{1, 2, 3});
 
 				switch (choice) {
 					case 1:
 						board.draw();
-						attackPlayer(player1, player2);
+						attackPlayer(player1, player2, boardPanel);
 						if (player2.Health <= 0) {
 							return;//end battle already
 						}
@@ -293,7 +362,7 @@ public class Battle {
 					case 2:
 						board.draw();
 
-						int res = tryUseItem(player1);
+						int res = tryUseItem(player1, boardPanel);
 
 						if (res == 0)
 							continue;
@@ -301,8 +370,11 @@ public class Battle {
 							break;
 						else if (res == 2) {
 							player2.negativeEffect = "Poisoned";
-							System.out.printf("%n[Player %d](%dHP) is poisoned%n", player2.getId(), player2.Health);
-							break;
+							String line03 = String.format("%n[Player %d](%dHP) is poisoned%n", player2.getId(), player2.Health);
+                            System.out.println(  line03 );
+                        boardPanel.getMessage().setText(line03);
+
+							
 						}
 						else
 							return;
@@ -310,13 +382,18 @@ public class Battle {
 						board.draw();
 
 						if (Math.random() * 100 < player1.Agility) {
-							System.out.printf("%n[Player %d] fled the battle%n",
-								player1.getId());
+							String line21 = String.format("%n[Player %d] fled the battle%n",
+                            player1.getId());
+                            System.out.println(line21);
+                        boardPanel.getMessage().setText(line21);
+
 							return;
 						}
 						else {
-							System.out.printf("%n[Player %d] flee unsuccessful%n",
-								player1.getId());
+							String line22 = String.format("%n[Player %d] flee unsuccessful%n",
+                            player1.getId());
+                            System.out.println(line22);
+                        boardPanel.getMessage().setText(line22);
 						}
 						break;
 				}
@@ -324,27 +401,33 @@ public class Battle {
 			else {
 				//check for effect
 				if (player2.negativeEffect.equals("Poisoned")) {
-					System.out.printf("%n%dHP poison damage inflicted on [Player %d](%dHP)%n"
-						, ((int) (player2.Health * 0.1)), player2.getId(), player2.Health);
-					player2.Health -= ((int) (player2.Health * 0.1));
+					String line23 = String.format("%n%dHP poison damage inflicted on [Player %d](%dHP)%n"
+                    , ((int) (player2.Health * 0.1)), player2.getId(), player2.Health);
+            player2.Health -= ((int) (player2.Health * 0.1));
+                    System.out.println(line23);
+                boardPanel.getMessage().setText(line23);
 				}
 
-				System.out.printf("%n[Player %d](%dHP) is in battle%n", player2.getId(), player2.Health);
-				System.out.printf("1. Attack [Player %d](%dHP)%n", player1.getId(), player1.Health);
-				System.out.println("2. Use Item");
-				System.out.printf("3. Flee(%d%c)%n", player2.Agility, '%');
-
+				String line24 = String.format("%n[Player %d](%dHP) is in battle%n", player2.getId(), player2.Health);
+                System.out.printf(line24);
+                String line25 = String.format("1. Attack [Player %d](%dHP)%n", player1.getId(), player1.Health);
+                System.out.println(line25);
+                String line26 = "2. Use Item";
+                System.out.println(line26);
+                String line27 = String.format("3. Flee(%d%c)%n", player2.Agility, '%');
+                System.out.println(line27);
+                boardPanel.getCommand().setText(line24+"\n"+line25+"\n"+line26+"\n"+line27);
 				int choice = CommandParser.readInt(new int[]{1, 2, 3});
 
 				switch (choice) {
 					case 1:
 						board.draw();
-						attackPlayer(player2, player1);
+						attackPlayer(player2, player1, boardPanel);
 						break;
 					case 2:
 						board.draw();
 
-						int res = tryUseItem(player2);
+						int res = tryUseItem(player2, boardPanel);
 
 						if (res == 0)
 							continue;
@@ -352,7 +435,10 @@ public class Battle {
 							break;
 						else if (res == 2) {
 							player1.negativeEffect = "Poisoned";
-							System.out.printf("%n[Player %d](%dHP) is poisoned%n", player1.getId(), player1.Health);
+							String line99 = String.format("%n[Player %d](%dHP) is poisoned%n", player1.getId(), player1.Health);
+                    System.out.println(line99);
+                boardPanel.getMessage().setText(line99);
+							
 							break;
 						}
 						else
@@ -361,13 +447,18 @@ public class Battle {
 						board.draw();
 
 						if (Math.random() * 100 < player2.Agility) {
-							System.out.printf("%n[Player %d] fled the battle%n",
-								player2.getId());
+							String line28 = String.format("%n[Player %d] fled the battle%n",
+                            player2.getId());
+                    System.out.println(line28);
+                boardPanel.getMessage().setText(line28);
+
 							return;
 						}
 						else {
-							System.out.printf("%n[Player %d] flee unsuccessful%n",
-								player2.getId());
+							String line29 = String.format("%n[Player %d] flee unsuccessful%n",
+                            player2.getId());
+                    System.out.println(line29);
+                boardPanel.getMessage().setText(line29);
 						}
 						break;
 				}
@@ -384,67 +475,106 @@ public class Battle {
 		player2.positiveEffect = "";
 	}
 
-	public void attackPlayer(Player player, Player playerToAttack) {
+	public void attackPlayer(Player player, Player playerToAttack,BoardPanel boardPanel ) {
 		if (Math.random() * player.Agility > Math.random() * playerToAttack.Agility) {
 
 			int damage = player.Strength * 100 / (100 + playerToAttack.Defense);
 			playerToAttack.Health -= Math.min(playerToAttack.Health, damage);
-			System.out.printf("%n[Player %d](%dHP) inflicted %dHP damage on [Player %d](%dHP)%n",
-				player.getId(), player.Health, damage, playerToAttack.getId(), playerToAttack.Health);
+
+			String line30 = String.format("%n[Player %d](%dHP) inflicted %dHP damage on [Player %d](%dHP)%n",
+			player.getId(), player.Health, damage, playerToAttack.getId(), playerToAttack.Health);
+                    System.out.println(line30);
+				boardPanel.getMessage().setText(line30);
+				
+			
 			if (player.positiveEffect.equals("Weapon Enchant")) {
 				playerToAttack.Health -= 30;
-				System.out.printf("%n[Player %d](%dHP)'s enchanted weapon deal another 30HP damage on [Player %d](%dHP)%n",
-					player.getId(), player.Health, playerToAttack.getId(), playerToAttack.Health);
+
+				String line31 = String.format("%n[Player %d](%dHP)'s enchanted weapon deal another 30HP damage on [Player %d](%dHP)%n",
+				player.getId(), player.Health, playerToAttack.getId(), playerToAttack.Health);
+                    System.out.println(line31);
+				boardPanel.getMessage().setText(line31);
+
+				
 			}
 		}
 		else {
 			//dodged
-			System.out.printf("%n[Player %d](%dHP) dodged [Player %d](%dHP)'s attack%n",
-				playerToAttack.getId(), playerToAttack.Health, player.getId(), player.Health);
+			String line32 = String.format("%n[Player %d](%dHP) dodged [Player %d](%dHP)'s attack%n",
+			playerToAttack.getId(), playerToAttack.Health, player.getId(), player.Health);
+                    System.out.println(line32);
+				boardPanel.getMessage().setText(line32);
+
+	
 		}
 
 		//player defeated
 		if (playerToAttack.Health <= 0) {
-			System.out.printf("%n[Player %d](%dHP) defeated [Player %d](%dHP)%n",
-				player.getId(), player.Health, playerToAttack.getId(), playerToAttack.Health);
-
+			String line33 = String.format("%n[Player %d](%dHP) defeated [Player %d](%dHP)%n",
+			player.getId(), player.Health, playerToAttack.getId(), playerToAttack.Health);
+                    System.out.println(line33);
+				boardPanel.getMessage().setText(line33);
+			
 			//player gets playerToAttack items
 			ArrayList<Item> defeatedInventory = playerToAttack.getItems();
 			if (defeatedInventory.size() != 0) {
 				Item defeatedDrop = defeatedInventory.get(Util.RandomBetween(0, defeatedInventory.size() - 1));
 				player.addItem(defeatedDrop);
-				System.out.printf("%n[Player %d](%dHP) get %s from [Player %d](%dHP)%n",
-					player.getId(), player.Health, defeatedDrop.Name, playerToAttack.getId(), playerToAttack.Health);
+
+				String line34 = String.format("%n[Player %d](%dHP) get %s from [Player %d](%dHP)%n",
+				player.getId(), player.Health, defeatedDrop.Name, playerToAttack.getId(), playerToAttack.Health);
+                    System.out.println(line34);
+				boardPanel.getMessage().setText(line34);
+			
 			}
 			else {
-				System.out.printf("%n[Player %d](%dHP) does not have item to give [Player %d](%dHP)%n",
-					playerToAttack.getId(), playerToAttack.Health, player.getId(), player.Health);
+				String line35 = String.format("%n[Player %d](%dHP) does not have item to give [Player %d](%dHP)%n",
+				playerToAttack.getId(), playerToAttack.Health, player.getId(), player.Health);
+                    System.out.println(line35);
+				boardPanel.getMessage().setText(line35);
+				
 			}
 
 			//player gets gold = 50% playerToAttack gold 
 			player.Gold += (playerToAttack.Gold / 2);
-			System.out.printf("%n[Player %d](%dHP) gained %d Gold%n",
-				player.getId(), player.Health, (playerToAttack.Gold / 2));
+			String line36 = String.format("%n[Player %d](%dHP) gained %d Gold%n",
+			player.getId(), player.Health, (playerToAttack.Gold / 2));
+                    System.out.println(line36);
+				boardPanel.getMessage().setText(line36);
+
+	
 			if (player.positiveEffect.equals("Lucky")) {
 				player.Gold += (playerToAttack.Gold / 2);
-				System.out.printf("%n[Player %d](%dHP) is lucky and gained another %d Gold%n",
-					player.getId(), player.Health, (playerToAttack.Gold / 2));
+
+				String line37 = String.format("%n[Player %d](%dHP) is lucky and gained another %d Gold%n",
+				player.getId(), player.Health, (playerToAttack.Gold / 2));
+                    System.out.println(line37);
+				boardPanel.getMessage().setText(line37);
 			}
 
 			//player gains exp = 50% playerToAttack exp
 			player.Exp += playerToAttack.Exp / 2;
-			System.out.printf("%n[Player %d](%dHP) gained %d EXP%n",
-				player.getId(), player.Health, playerToAttack.Exp / 2);
 
+			String line38 = String.format("%n[Player %d](%dHP) gained %d EXP%n",
+			player.getId(), player.Health, playerToAttack.Exp / 2);
+                    System.out.println(line38);
+				boardPanel.getMessage().setText(line38);
+			
 			//check for level up
 			player.levelUp();
 		}
 	}
 
 	// 0 if didn't use item, 1 if used item, 3 if used smoke bomb
-	private int tryUseItem(Player player) {
-		System.out.printf("%n[Player %d] chose item to use%n", player.getId());
-		System.out.println("1. Back");
+	private int tryUseItem(Player player, BoardPanel boardPanel)  {
+
+		String line39 = String.format("%n[Player %d] chose item to use%n", player.getId());
+                    System.out.println(line39);
+				boardPanel.getCommand().setText(line39);
+				String line40 = "1. Back";
+				System.out.println(line40);
+			boardPanel.getCommand().setText(line40);
+		
 
 		int choiceSize = 1;
 
@@ -452,7 +582,10 @@ public class Battle {
 			Item item = player.getItems().get(i);
 
 			if (item.IsUsable) {
-				System.out.printf("%d. Use %s%n", choiceSize + 1, item.Name);
+				String line41 = String.format("%d. Use %s%n", choiceSize + 1, item.Name);
+                    System.out.println(line41);
+				boardPanel.getCommand().setText(line41);
+			
 				choiceSize++;
 			}
 		}
@@ -486,37 +619,56 @@ public class Battle {
 		itemToUse.use(player);
 
 		if (itemToUse.Name.equals("Smoke Bomb")) {
-			System.out.printf("%n[Player %d] escaped the battle%n", player.getId());
+
+			String line42 = String.format("%n[Player %d] escaped the battle%n", player.getId());
+                    System.out.println(line42);
+				boardPanel.getMessage().setText(line42);
+		
 			return 3;
 		}
 		else if (itemToUse.Name.equals("Poison"))
 			return 2;
 		else {
 			if (itemToUse.Name.equals("Strength Potion")) {
-				System.out.printf("%n[Player %d](%dHP) use %s, strength increase by %d%n",
-					player.getId(), player.Health, itemToUse.Name, ((int) (player.Strength * 0.2)));
+
+
+			String line43 = String.format("%n[Player %d](%dHP) use %s, strength increase by %d%n",
+			player.getId(), player.Health, itemToUse.Name, ((int) (player.Strength * 0.2)));
+			System.out.println(line43);
+		boardPanel.getMessage().setText(line43);
+			
 				potionBonusEnd(player);
 				player.tempStrength = ((int) (player.Strength * 0.2));
 				potionBonus(player);
 			}
 			if (itemToUse.Name.equals("Agility Potion")) {
-				System.out.printf("%n[Player %d](%dHP) use %s, agility increase by %d%n",
-					player.getId(), player.Health, itemToUse.Name, ((int) (player.Agility * 0.2)));
+				String line44 = String.format("%n[Player %d](%dHP) use %s, agility increase by %d%n",
+				player.getId(), player.Health, itemToUse.Name, ((int) (player.Agility * 0.2)));
+			System.out.println(line44);
+		boardPanel.getMessage().setText(line44);
+
 				potionBonusEnd(player);
 				player.tempAgility = ((int) (player.Agility * 0.2));
 				potionBonus(player);
 			}
 			if (itemToUse.Name.equals("Defence Potion")) {
-				System.out.printf("%n[Player %d](%dHP) use %s, defense increase by %d%n",
-					player.getId(), player.Health, itemToUse.Name, ((int) (player.Defense * 0.2)));
+
+				String line45 = String.format("%n[Player %d](%dHP) use %s, defense increase by %d%n",
+				player.getId(), player.Health, itemToUse.Name, ((int) (player.Defense * 0.2)));
+			System.out.println(line45);
+		boardPanel.getMessage().setText(line45);
+				
 				potionBonusEnd(player);
 				player.tempDefense = ((int) (player.Defense * 0.2));
 				potionBonus(player);
 			}
 			if (itemToUse.Name.equals("Ability Potion")) {
-				System.out.printf("%n[Player %d](%dHP) use %s, strength +%d, agility +%d and defense +%d %n",
-					player.getId(), player.Health, itemToUse.Name,
-					((int) (player.Strength * 0.2)), ((int) (player.Agility * 0.2)), (int) (player.Defense * 0.2));
+				String line46 = String.format("%n[Player %d](%dHP) use %s, strength +%d, agility +%d and defense +%d %n",
+				player.getId(), player.Health, itemToUse.Name,
+				((int) (player.Strength * 0.2)), ((int) (player.Agility * 0.2)), (int) (player.Defense * 0.2));
+			System.out.println(line46);
+		boardPanel.getMessage().setText(line46);
+				
 				potionBonusEnd(player);
 				player.tempStrength = ((int) (player.Strength * 0.2));
 				player.tempAgility = ((int) (player.Agility * 0.2));
@@ -524,9 +676,13 @@ public class Battle {
 				potionBonus(player);
 			}
 			if (itemToUse.Name.equals("Rage Potion")) {
-				System.out.printf("%n[Player %d](%dHP) use %s, strength +%d, agility +%d and defense +%d %n",
-					player.getId(), player.Health, itemToUse.Name,
-					((int) (player.Strength * 0.5)), ((int) (player.Agility * 0.5)), (int) (player.Defense * 0.5));
+				String line47 = String.format("%n[Player %d](%dHP) use %s, strength +%d, agility +%d and defense +%d %n",
+				player.getId(), player.Health, itemToUse.Name,
+				((int) (player.Strength * 0.5)), ((int) (player.Agility * 0.5)), (int) (player.Defense * 0.5));
+			System.out.println(line47);
+		boardPanel.getMessage().setText(line47);
+
+			
 				potionBonusEnd(player);
 				player.tempStrength = ((int) (player.Strength * 0.5));
 				player.tempAgility = ((int) (player.Agility * 0.5));
@@ -534,31 +690,55 @@ public class Battle {
 				potionBonus(player);
 			}
 			if (itemToUse.Name.equals("HP Potion")) {
-				System.out.printf("%n[Player %d](%dHP) use %s, recover %d HP%n",
-					player.getId(), player.Health, itemToUse.Name, ((int) (player.Health * 0.2)));
+
+				String line48 = String.format("%n[Player %d](%dHP) use %s, recover %d HP%n",
+				player.getId(), player.Health, itemToUse.Name, ((int) (player.Health * 0.2)));
+			System.out.println(line48);
+		boardPanel.getMessage().setText(line48);
+				
 				player.Health += ((int) (player.Health * 0.2));
 			}
 			if (itemToUse.Name.equals("Nasi Lemak")) {
-				System.out.printf("%n[Player %d](%dHP) eat %s, recover 50 HP%n",
-					player.getId(), player.Health, itemToUse.Name);
+				String line49 = String.format("%n[Player %d](%dHP) eat %s, recover 50 HP%n",
+				player.getId(), player.Health, itemToUse.Name);
+			System.out.println(line49);
+		boardPanel.getMessage().setText(line49);
+
 				player.Health += 50;
 			}
 			if (itemToUse.Name.equals("Antidote")) {
 				if (player.negativeEffect.equals("Poisoned")) {
 					player.negativeEffect = "";
-					System.out.printf("%n[Player %d] release effect of poison with %s%n", player.getId(), itemToUse.Name);
+					String line50 = String.format("%n[Player %d] release effect of poison with %s%n", player.getId(), itemToUse.Name);
+			System.out.println(line50);
+		boardPanel.getMessage().setText(line50);
+
+					
 				}
 				else {
-					System.out.printf("%n[Player %d] is not poisoned%n", player.getId());
+
+					String line51 = String.format("%n[Player %d] is not poisoned%n", player.getId());
+			System.out.println(line51);
+		boardPanel.getMessage().setText(line51);
+					
 				}
 			}
 			if (itemToUse.Name.equals("Weapon Enchanter")) {
 				player.positiveEffect = "Weapon Enchant";
-				System.out.printf("%n[Player %d] weapon is enchanted%n", player.getId());
+
+				String line51 = String.format("%n[Player %d] weapon is enchanted%n", player.getId());
+			System.out.println(line51);
+		boardPanel.getMessage().setText(line51);
+
 			}
 			if (itemToUse.Name.equals("Lucky Potion")) {
 				player.positiveEffect = "Lucky";
-				System.out.printf("%n[Player %d] is now lucky%n", player.getId());
+
+
+				String line52 = String.format("%n[Player %d] is now lucky%n", player.getId());
+			System.out.println(line52);
+		boardPanel.getMessage().setText(line52);
+
 			}
 			return 1;
 		}
