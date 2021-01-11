@@ -13,8 +13,8 @@ import java.util.Scanner;
 
 public class CommandParser {
 	private final static Scanner scn = new Scanner(System.in);
-
-	public static int readInt(int[] choices) {
+	
+	public static int readInt(int[] choices, BoardPanel boardPanel) {
 		while (true) {
 			try {
 				int v = getIntInput();
@@ -23,10 +23,16 @@ public class CommandParser {
 					return v;
 				}
 				else {
-					System.out.println("Invalid choice. Chose again.");
+					String InvalidC = "Invalid choice. Chose again.";
+                    boardPanel.getMessage().setText(InvalidC);
+                    System.out.println(InvalidC);
+					
 				}
 			} catch (Exception ignored) {
-				System.out.println("Invalid format. Try again.");
+				String InvalidF = "Invalid choice. Chose again.";
+					boardPanel.getMessage().setText(InvalidF);
+					System.out.println(InvalidF);
+			
 				scn.next();
 			}
 		}
